@@ -1,0 +1,35 @@
+//Tags setting
+$tags-margin: 0 auto;
+$tags-padding: 2.5%;
+$tags-a-margin: 0 1%;
+$tags-fontSzie: 112.5%;
+$tags-color: rgb(93,93,93);
+$tags-zIndex: 99;
+
+@mixin tags {
+    .tags-main {
+        position: relative;
+        z-index: $tags-zIndex;
+        margin: $tags-margin;
+        padding: $tags-padding;
+        overflow: hidden;
+        text-align: center;
+        a {
+            margin: $tags-a-margin;
+            font-size: $tags-fontSzie;
+            font-family: $blog-main-font;
+            color: $tags-color;
+            &:hover {
+              color: $blog-main-color;
+            }
+        }
+        sup {
+            display: none;
+        }
+    }
+    .tags-photo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+}

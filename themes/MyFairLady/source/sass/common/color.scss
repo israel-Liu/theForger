@@ -1,0 +1,16 @@
+//main color
+
+$theme-color-config: hexo-theme-config('blog-color');
+
+$theme-color-map: (
+  'Default': #f64e54,
+  'Mint Green': #31a263,
+  'Pale Denim': #1E90FF,
+  'Hot Pink': #ff96d8,
+  'Dark Violet': #BA55D3
+) !default;
+
+$blog-main-color: map-get($theme-color-map, 'Default');
+@if $theme-color-config != 'Default' {
+  $blog-main-color: map-get($theme-color-map, $theme-color-config);
+}

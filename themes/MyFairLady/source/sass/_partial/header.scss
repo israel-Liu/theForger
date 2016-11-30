@@ -1,0 +1,56 @@
+//Nav header setting
+$header-zIndex: 12;
+$header-paddingVertical: 1.56em;
+$header-paddingHorizontal: 3.75em;
+
+//Logo-link setting
+$header-logo-lineHeight: 1;
+$header-logo-linkSize: 300%;
+
+//Nav setting
+$header-nav-right: 60px;
+$header-nav-top: 20px;
+$header-nav-lineHeight: 3;
+
+//Nav-list-item setting
+$header-list-marginVertical: 0;
+$header-list-marginHorizontal: 0.6em;
+$header-list-fontSize: 112.5%;
+
+@mixin header {
+    .nav-header {
+        position: relative;
+        z-index: $header-zIndex;
+        padding: $header-paddingVertical $header-paddingHorizontal;
+        box-shadow: 0 0 4px rgba(0,0,0,0.25);
+        .logo-link {
+            line-height: $header-logo-lineHeight;
+            display: inline-block;
+            cursor: pointer;
+            font-family: cathsgbr;
+            font-size: $header-logo-linkSize;
+            color: $blog-main-color;
+        }
+    }
+    .nav {
+        position: absolute;
+        right: $header-nav-right;
+        top: $header-nav-top;
+        line-height: $header-nav-lineHeight;
+        .nav-list-item {
+            display: inline-block;
+            text-transform: capitalize;
+            position: relative;
+            margin: $header-list-marginVertical $header-list-marginHorizontal;
+            a {
+                font-family:$blog-main-font;
+                cursor: pointer;
+                color: $blog-main-color;
+                font-size: $header-list-fontSize;
+                &:hover {
+                    text-shadow: 0 0 0.1em $blog-main-color, 0 0 0.3em $blog-main-color;
+                }
+            }
+        }
+    }
+}

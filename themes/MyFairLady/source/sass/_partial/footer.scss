@@ -1,0 +1,28 @@
+//Footer setting
+$footer-fontWeight: 700;
+$footer-paddingVertical: 1%;
+$footer-paddingHorizontal: 0;
+$footer-marginTop: 2%;
+$footer-fontSize: 125%;
+$footer-color: rgb(93, 93, 93);
+$footer-fontFamily: 'Microsoft YaHei';
+
+@mixin footer {
+    .blog-footer {
+        text-align: center;
+        clear: both;
+        color: $blog-main-color;
+        font-family: cathsgbr;
+        font-weight: $footer-fontWeight;
+        font-size: $footer-fontSize;
+        padding: $footer-paddingVertical $footer-paddingHorizontal;
+        margin-top: $footer-marginTop;
+        position: relative;
+        .inner {
+            a {
+                color: $footer-color;
+                font-family: $footer-fontFamily;
+            }
+        }
+    }
+}

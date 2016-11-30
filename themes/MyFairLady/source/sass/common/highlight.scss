@@ -1,0 +1,72 @@
+
+$theme_config : hexo-theme-config("code-theme");
+
+$code-background   : #f7f7f7;
+$code-current-line : #efefef;
+$code-selection    : #d6d6d6;
+$code-foreground   : #4d4d4c;
+$code-comment      : #8e908c;
+$code-red          : #c82829;
+$code-orange       : #f5871f;
+$code-yellow       : #eab700;
+$code-green        : #718c00;
+$code-aqua         : #3e999f;
+$code-blue         : #4271ae;
+$code-purple       : #8959a8;
+
+@if $theme_config == "Night" {
+  $code-background   : #1d1f21;
+  $code-current-line : #282a2e;
+  $code-selection    : #373b41;
+  $code-foreground   : #c5c8c6;
+  $code-comment      : #969896;
+  $code-red          : #cc6666;
+  $code-orange       : #de935f;
+  $code-yellow       : #f0c674;
+  $code-green        : #b5bd68;
+  $code-aqua         : #8abeb7;
+  $code-blue         : #81a2be;
+  $code-purple       : #b294bb;
+}
+@if $theme_config == "Eighties" {
+  $code-background   : #2d2d2d;
+  $code-current-line : #393939;
+  $code-selection    : #515151;
+  $code-foreground   : #cccccc;
+  $code-comment      : #999999;
+  $code-red          : #f2777a;
+  $code-orange       : #f99157;
+  $code-yellow       : #ffcc66;
+  $code-green        : #99cc99;
+  $code-aqua         : #66cccc;
+  $code-blue         : #6699cc;
+  $code-purple       : #cc99cc;
+}
+@if $theme_config == "Blue" {
+  $code-background   : #002451;
+  $code-current-line : #00346e;
+  $code-selection    : #003f8e;
+  $code-foreground   : #ffffff;
+  $code-comment      : #7285b7;
+  $code-red          : #ff9da4;
+  $code-orange       : #ffc58f;
+  $code-yellow       : #ffeead;
+  $code-green        : #d1f1a9;
+  $code-aqua         : #99ffff;
+  $code-blue         : #bbdaff;
+  $code-purple       : #ebbbff;
+}
+@if $theme_config == "Bright" {
+  $code-background   : #000000;
+  $code-current-line : #2a2a2a;
+  $code-selection    : #424242;
+  $code-foreground   : #eaeaea;
+  $code-comment      : #969896;
+  $code-red          : #d54e53;
+  $code-orange       : #e78c45;
+  $code-yellow       : #e7c547;
+  $code-green        : #b9ca4a;
+  $code-aqua         : #70c0b1;
+  $code-blue         : #7aa6da;
+  $code-purple       : #c397d8;
+}

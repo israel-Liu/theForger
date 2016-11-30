@@ -1,0 +1,26 @@
+<div class="tags-main">
+    <div class="s-photo">
+        <img src="<%=theme.archivePhoto%>" alt="photo">
+    </div>
+    <div class="tags-body">
+        <ul>
+            <% var year = 0; %>
+            <% change = false %>
+            <% page.posts.each(function(item){ %>
+            <% var itemYear = date(item.date, 'YYYY') - 0; %>
+            <% change = year !== itemYear; %>
+            <% year = change ? itemYear : year %>
+            <% if (change) { %>
+                <h2 class="tags-title"><%=year%></h2>
+            <% } %>
+            <li class="tags-entry">
+            <%=full_date(item.date, 'MMM Do') %>
+                <a href="<%- url_for(item.path) %>">
+                    <%-item.title %>
+                </a>
+            </li>
+            <% }) %>
+        </ul>
+        <%- partial('_partial/post/paginator') %>
+    </div>
+</div>

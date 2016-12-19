@@ -4,13 +4,13 @@ date: 2016-12-18 09:58:03
 tags:
 ---
 
-### What is RAII? 
+### What is RAII?
 ```CPP
 把资源和对象的生命周期绑定，对象创建获取资源，对象销毁释放资源。  
 把底层的资源管理提升到对象生命周期管理的层次。
 ```
 
-### Why C++ chooses RAII instead of normal GC 
+### Why C++ chooses RAII instead of normal GC
 ```CPP
 和GC相比，RAII达到了和手动释放资源一样的实时性，因此可以承担底层开发的重任
 ```
@@ -18,7 +18,9 @@ tags:
 ### unique-onwership smart pointer
 ```CPP
 unique-onwership smart pointer ? 只能一个对象拥有资源 ? 转让所有权 ?
-move-sematics ? 避免拷贝 ？
+move-sematics ? 避免拷贝 ？  
+
+使用时智能指针是个栈对象，里面包了一个指针，对象在出作用域的时候会析构，然后析构里面对我们包裹的指针进行释放
 
 #pragma once
 #include <memory>
@@ -101,7 +103,7 @@ namespace hinata {
 		//// Returns: A reference to the stored deleter.
 		//deleter_type& get_deleter() noexcept;
 		//const deleter_type& get_deleter() const noexcept;
-		
+
 		// modifiers
 		pointer_ release() noexcept
 		{	// yield ownership of pointer

@@ -3,11 +3,12 @@ title: git help
 date: 2016-12-23 17:38:37
 tags:
 ---
-ËäËµgit²Ù×÷Ó¦¸ÃÊÇÀí½âºóÊ¹ÓÃµÄ£¬µ«ÊÇÓĞÊ±ºòÄÔ´ü¾ÍÊÇ²»ºÃÊ¹£¬»¹ÊÇĞ´¸ö±Ê¼Ç¼ÇÂ¼Ò»ÏÂ
-![The Three States](https://share.weiyun.com/a29362fdeebff08585ca7bb798a762ce)
+è™½è¯´gitæ“ä½œåº”è¯¥æ˜¯ç†è§£åä½¿ç”¨çš„ï¼Œä½†æ˜¯æœ‰æ—¶å€™è„‘è¢‹å°±æ˜¯ä¸å¥½ä½¿ï¼Œè¿˜æ˜¯å†™ä¸ªç¬”è®°è®°å½•ä¸€ä¸‹   
+#### The Three States
+![](https://github.com/israel-Liu/theForger/raw/master/images/git_three _states.png)
 ### git push
 ```CPP
-// ±¾µØ·ÖÖ§ÍÆËÍµ½Ô¶¶Ë·ÖÖ§
-// Ô¶¶Ë·ÖÖ§²»´æÔÚµÄÊ±ºòÊ¹ÓÃ
+// æœ¬åœ°åˆ†æ”¯æ¨é€åˆ°è¿œç«¯åˆ†æ”¯
+// è¿œç«¯åˆ†æ”¯ä¸å­˜åœ¨çš„æ—¶å€™ä½¿ç”¨
 git push --set-upstream origin <origin_name>
 ```

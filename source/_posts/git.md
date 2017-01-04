@@ -85,9 +85,90 @@ $ git remote rename pb paul
 $ git tag
 // 还有一大推，这里先忽略
 ```
-### git push
+#### A branch and its commit history
+![](https://github.com/israel-Liu/theForger/raw/master/images/git_branching.png)
+#### Branches in a Nutshell
 ```
+// Creating a New Branch
+$ git branch testing    // 创建一个新指针，指向当前提交点（HEAD指针记录当前branch）
+// 查看当前HEAD
+$ git log --oneline --decorate
+// Switching Branches  // 切换分支会改变工作目录文件
+$ git checkout testing // 移动HEAD指针指向testing分支
+// 获取全部log，可以看到指针指向
+$ git log --oneline --decorate --graph --all
+```
+#### Basic Branching and Merging
+![Hotfix branch based on master](https://github.com/israel-Liu/theForger/raw/master/images/merge_branch.png)
+```
+// Basic Branching
+// 合并新分支的提交（上图hotfix）在原分支（上图master）上执行merge
+$ git checkout master     // 切换分支（HEAD指向master工作目录改变）
+$ git merge hotfix        // 合并新提交
+$ git branch -d hotfix    // Deleted branch hotfix (3a0874c).
+```
+![Work continues on iss53](https://github.com/israel-Liu/theForger/raw/master/images/merge_two.png)
+```
+// Basic Merging
+// 合并两个没有前后关系的分支(上图master和iss53都是在一个点继续提交的)
+$ git checkout master    // Switched to branch 'master'
+$ git merge iss53        // Merge made by the 'recursive' strategy.
+// 这种情况会产生一个新的提交(master会指向这个提交，提交由前面C3，4，5合并生产)
+
+// Basic Merge Conflicts // 上面情况可能会产生冲突，下面介绍解决冲突
+// 解决冲突前，git没法产生新的提交点
+$ git mergetool          // 这里不继续介绍了，建议用图形工具
+// use "git commit" to conclude merge
+```
+#### Branch Management
+```
+$ git branch             // 查看当前所有分支(主要自己本地(remote)建的)
+$ git branch -v          // -v带最后一次提交信息
+// To see which branches are already merged into the branch you’re on
+$ git branch --merged    //(--no-merged)
+```
+#### Branching Workflows
+```
+// Long-Running Branches
+// Topic Branches
+```
+#### Remote Branches
+![Server and local repositories after cloning](https://github.com/israel-Liu/theForger/raw/master/images/remote_branch.png)
+```
+// 同步origin所在服务器，我还没有的数据
+$ git fetch                 // git fetch origin
+// 创建远端服务器新分支，和别人共享使用
+$ git push origin serverfix // git push <remote> <branch>
+// 合并远端别人的提交
+$ git merge origin/serverfix
+// 使用别人分享的远端分子
+$ git checkout -b serverfix origin/serverfix
+```
+#### Tracking Branches
+```
+// the branch it tracks is called an “upstream branch”
+$ git checkout --track origin/serverfix
+```
+#### Pulling
+```
+// Deleting Remote Branches
+$ git push origin --delete serverfix
 // 本地分支推送到远端分支
 // 远端分支不存在的时候使用
+// the branch it tracks is called an “upstream branch”
 $ git push --set-upstream origin <origin_name>
+```
+#### Rebasing
+![](https://github.com/israel-Liu/theForger/raw/master/images/rebase.png)
+```
+// The Basic Rebase
+$ git checkout experiment   // 移动C4到C3的后面
+$ git rebase master         // 把experiment合并到master的线，不产生新节点
+// 把master向前移动获取experiment上的提交
+$ git checkout master
+$ git merge experiment
+```
+#### More Interesting Rebases
+```
+
 ```

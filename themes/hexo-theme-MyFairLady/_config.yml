@@ -13,12 +13,16 @@ header:
     aboutFriendlink: Talent
 
 # author chat
-chat: 杨滋滋的生活得有代码音乐，还有远方的人
+chat:
+十里长亭霜满天，青丝白发度何年。
+今生无悔今生错，来世有缘来世迁。
+笑靥如花堪缱绻，容颜似水怎缠绵。
+情浓渺恰相思淡，自在蓬山舞复跹。
 
 # SubNav
 subnav:
-  gitHub: "https://github.com/yzzting"
-  zhiHu: "https://www.zhihu.com/people/yang-zi-zi-1995"
+  GitHub: "https://github.com/israel-Liu"
+  WeChat: "https://www.zhihu.com/people/yang-zi-zi-1995"
 
 # friendlink
 friendlink:
@@ -41,7 +45,7 @@ disqus: yzzting
 # duoshuo: yzzting
 
 # photo link
-aboutPhoto: http://7xp1k3.com1.z0.glb.clouddn.com/156_1.jpg
+aboutPhoto: https://github.com/israel-Liu/theForger/raw/master/images/me.jpg
 tagPhoto: http://7xp1k3.com1.z0.glb.clouddn.com/83_1.jpg
 archivePhoto: https://github.com/israel-Liu/theForger/raw/master/images/One_Piece.jpg
 

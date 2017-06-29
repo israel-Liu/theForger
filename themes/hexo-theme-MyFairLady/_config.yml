@@ -31,7 +31,7 @@ friendlink:
 excerpt_link: ...continue reading
 
 # favicon
-favicon: http://7xp1k3.com1.z0.glb.clouddn.com/octocat-de-los-muertos.jpg
+favicon: https://github.com/israel-Liu/theForger/raw/master/images/hinata.jpeg
 
 # Baidu Analytics
 # baidu_analytics: c21994907883f37ffd80e13627dd4faa
@@ -40,12 +40,12 @@ favicon: http://7xp1k3.com1.z0.glb.clouddn.com/octocat-de-los-muertos.jpg
 google_analytics: UA-75314797-1
 
 # comments
-disqus: yzzting
+disqus: theForger
 # duoshuo: yzzting
 
 # photo link
 aboutPhoto: https://github.com/israel-Liu/theForger/raw/master/images/me.jpg
-tagPhoto: http://7xp1k3.com1.z0.glb.clouddn.com/83_1.jpg
+tagPhoto: https://github.com/israel-Liu/theForger/raw/master/images/hinata.jpeg
 archivePhoto: https://github.com/israel-Liu/theForger/raw/master/images/One_Piece.jpg
 
 # Blog main color

@@ -13,16 +13,15 @@ header:
     aboutFriendlink: Talent
 
 # author chat
-chat:
-十里长亭霜满天，青丝白发度何年。
-今生无悔今生错，来世有缘来世迁。
-笑靥如花堪缱绻，容颜似水怎缠绵。
-情浓渺恰相思淡，自在蓬山舞复跹。
+chat: 十里长亭霜满天，青丝白发度何年。
+chat: 今生无悔今生错，来世有缘来世迁。
+chat: 笑靥如花堪缱绻，容颜似水怎缠绵。
+chat: 情浓渺恰相思淡，自在蓬山舞复跹。
 
 # SubNav
 subnav:
   GitHub: "https://github.com/israel-Liu"
-  WeChat: "https://www.zhihu.com/people/yang-zi-zi-1995"
+  WeChat: https://github.com/israel-Liu/theForger/raw/master/images/WeChat.png
 
 # friendlink
 friendlink:

@@ -1,7 +1,7 @@
 ---
 title: C++ Primer, Fifth Edition reading_note_one
 date: 2016-12-01 10:38:24
-tags: C++ Primer, reading note
+tags:
 ---
 总之先写点什么吧，对markdown的编辑格式还不是很熟悉  
 排版就先这样好了，日后再修改，或许发个markdown编辑格式的博文也不错，  

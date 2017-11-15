@@ -7,8 +7,9 @@ tags:
 这就需要我们不但会设计单独的类，还要知道如何更好的处理类之间的关系。下面介绍类之间的几种关系。
 
 #### Association
+![](https://github.com/israel-Liu/theForger/raw/master/images/Association.png)
 ```cpp
-// Association X -> Y (X knows a Y)
+// X knows a Y
 // One object is aware of another, it cantains a pointer or reference to another object
 class X
 {
@@ -31,8 +32,9 @@ private:
 };
 ```
 #### Dependency
+![](https://github.com/israel-Liu/theForger/raw/master/images/Dependency.png)
 ```cpp
-// Dependency X ---> Y (X uses a Y)
+// X uses a Y
 // One object issues a function call to a member function of another object
 class X
 {
@@ -65,8 +67,9 @@ public:
 };
 ```
 #### Composition
+![](https://github.com/israel-Liu/theForger/raw/master/images/Composition.png)
 ```cpp
-// Composition X ◆-> Y (X has a Y)
+// X has a Y
 // A class contains other classes as members
 // A stronger variety of aggregation, the part object may belong to only one whole
 // Expected to live and die with the whole (delete whole -> delete part)
@@ -101,8 +104,9 @@ private:
 };
 ```
 #### Aggregation
+![](https://github.com/israel-Liu/theForger/raw/master/images/Aggregation.png)
 ```cpp
-// Aggregation (X has a Y)
+// X has a Y
 // A class contains other classes as members
 // Cascading delete is often
 // An aggregated instance can be shared
@@ -110,8 +114,9 @@ private:
 // No example here use Association instead of Aggregation
 ```
 #### Inheritance
+![](https://github.com/israel-Liu/theForger/raw/master/images/Inheritance.png)
 ```cpp
-// Inheritance (X is a Y)
+// X is a Y
 // A class is derived from another class
 class Y
 {
@@ -125,6 +130,7 @@ class X : public Y
 ```
 
 #### Class Template
+![](https://github.com/israel-Liu/theForger/raw/master/images/ClassTemplate.png)
 ```cpp
 // Class Template (Y use parameterized class X)
 template<class T>
@@ -135,3 +141,27 @@ class X
 
 X<Y> a;
 ```
+#### 程序设计中模块间通信简化为类间通讯,了解类之间的关系后可以进一步设计模块
+```cpp
+class PT
+	: public PTAPI, // pt write interface and implement
+	  public UI_CALL_BACK_SINK // ui write interface pt write implement
+{
+public:
+	// PTAPI // also need write call back
+private:
+	UIAPI ui_api_; // use to control ui // also use for call back
+};
+
+class UI
+	: public UIAPI, // ui write interface and implement
+	  public PT_CALL_BACK_SINK // pt write interface ui write implement
+{
+public:
+	// UIAPI // also need write call back
+private:
+	PTAPI pt_api_; // use to control pt // also use for call back
+};
+```
+#### 最后附带一个使用STL的Composition图示
+![](https://github.com/israel-Liu/theForger/raw/master/images/CompositionExample.png)

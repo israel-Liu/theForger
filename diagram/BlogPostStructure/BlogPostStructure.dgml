@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="6694510d-42ba-4fa1-a5c0-2652a9a490321" Bounds="-441.806532746819,-912.793458457185,81.4633333333333,25.24" Label="programer" UseManualLocation="True" />
+    <Node Id="7ab70332-710f-4211-9b9d-c230f89157dd1" Bounds="-405.413358154297,-620.04674921875,155.88,25.24" Label="Programming Windows" UseManualLocation="True" />
+    <Node Id="AdvancedCAndC++Compiling" Bounds="-488.009512430827,-790.276667480469,205.92,25.24" Label="Advanced C and C++ Compiling" UseManualLocation="True" />
+    <Node Id="BuildingC/C++Programs" Bounds="-683.009512430827,-666.276672363281,168.576666666667,25.24" Label="Building C/C++ Programs" UseManualLocation="True" />
+    <Node Id="DLLsInVisualC++" Bounds="-581.396179097494,-442.999877929688,128.153333333333,25.24" Label="DLLs in Visual C++" UseManualLocation="True" />
+    <Node Id="OverviewOfWindowsProgrammingInC++" Bounds="-374.438415527344,-444.80664921875,271.533333333333,25.24" Label="Overview of Windows Programming in C++" UseManualLocation="True" />
+    <Node Id="WindowsAPI" Bounds="-787.658759837255,-447.446287892955,95.9933333333333,25.24" Label="Windows API" UseManualLocation="True" />
+    <Node Id="WindowsInternals" Bounds="-28.2992095947266,-715.999877929688,126.236666666667,25.24" Label="Windows Internals" UseManualLocation="True" />
+    <Node Id="WindowsProgramer" Bounds="-156.408602556945,-787.033458457186,137.766666666667,25.24" Label="Windows Programer" UseManualLocation="True" />
+    <Node Id="d7785c49-3b99-42ee-b606-c2bf2bffd5fb1" Bounds="-842.956488787472,-747.747428608818,263.966666666667,25.24" Label="Standard for Programming Language C++" UseManualLocation="True" />
+  </Nodes>
+  <Links>
+    <Link Source="7ab70332-710f-4211-9b9d-c230f89157dd1" Target="WindowsProgramer" Bounds="-309.339312508432,-756.652496035999,196.292808703574,136.605768741077" />
+    <Link Source="AdvancedCAndC++Compiling" Target="6694510d-42ba-4fa1-a5c0-2652a9a490321" Bounds="-398.256880274181,-878.629478189139,11.5566541130841,88.3528009430453" />
+    <Link Source="BuildingC/C++Programs" Target="7ab70332-710f-4211-9b9d-c230f89157dd1" Bounds="-524.675087976435,-641.036677246094,114.283561280539,19.4778452417479" />
+    <Link Source="BuildingC/C++Programs" Target="AdvancedCAndC++Compiling" Bounds="-576.974928832516,-760.519294707732,162.394984544913,94.2426174616386" />
+    <Link Source="DLLsInVisualC++" Target="7ab70332-710f-4211-9b9d-c230f89157dd1" Bounds="-503.7871764733,-588.668511453006,156.199507481555,145.668628640506" />
+    <Link Source="OverviewOfWindowsProgrammingInC++" Target="7ab70332-710f-4211-9b9d-c230f89157dd1" Bounds="-317.010098947104,-586.778650992423,71.9432586255395,141.972005484611" />
+    <Link Source="WindowsAPI" Target="7ab70332-710f-4211-9b9d-c230f89157dd1" Bounds="-709.524166268746,-591.330519613824,343.611300085973,143.884225668512" />
+    <Link Source="WindowsInternals" Target="WindowsProgramer" Bounds="-58.0060205095191,-757.274475382985,71.0891377508796,41.2745974532977" />
+    <Link Source="WindowsProgramer" Target="6694510d-42ba-4fa1-a5c0-2652a9a490321" Bounds="-361.257038902662,-884.203134843469,242.267111219783,97.169682695031" />
+    <Link Source="d7785c49-3b99-42ee-b606-c2bf2bffd5fb1" Target="6694510d-42ba-4fa1-a5c0-2652a9a490321" Bounds="-687.277230242873,-883.322819696624,254.56280060087,135.575378290374" />
+  </Links>
+  <Properties>
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+  </Properties>
+</DirectedGraph>

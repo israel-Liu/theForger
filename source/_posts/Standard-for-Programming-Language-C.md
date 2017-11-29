@@ -5,3 +5,5 @@ tags:
 ---
 1. [reading_note_one](https://israel-liu.github.io/2016/12/01/reading-note-one/#more)
 2. [Declarations](http://en.cppreference.com/w/cpp/language/declarations)
+3. [Storage class specifiers](http://en.cppreference.com/w/cpp/language/storage_duration)
+4. [Unnamed namespaces in a translation unit have the same identifier this identifier differs from all other identifiers in the translation unit. In addition, all names declared in unnamed namespace or a namespace within an unnamed namespace, even ones explicitly declared extern, have internal linkage.](http://en.cppreference.com/w/cpp/language/namespace)

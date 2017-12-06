@@ -77,3 +77,5 @@
 * 直接邮件联系我
 
 我都会认真对待
+
+npm install --save hexo-renderer-scss

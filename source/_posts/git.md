@@ -64,6 +64,12 @@ $ git commit --amend
 $ git reset HEAD CONTRIBUTING.md
 // Unmodifying a Modified File
 $ git checkout -- CONTRIBUTING.md
+// Revert merged
+$ git merge --abort
+// Revert any operation
+$ git reflog
+// 3 is HEAD number
+$ git reset --hard HEAD~3
 ```
 #### Working with Remotes
 ```CPP
@@ -172,3 +178,35 @@ $ git merge experiment
 ```CPP
 // 比较复杂这里先不说了
 ```
+```CPP
+// Command line instructions
+Git global setup
+git config --global user.name "Israel.liu"
+git config --global user.email "israel.liu@zoom.us"
+// Create a new repository
+git clone https://Israel.liu@git.zoom.us/Israel.liu/zoom_tools.git
+cd zoom_tools
+touch README.md
+git add README.md
+git commit -m "add README"
+git push -u origin master
+// Existing folder
+cd existing_folder
+git init
+git remote add origin https://Israel.liu@git.zoom.us/Israel.liu/zoom_tools.git
+git add .
+git commit -m "Initial commit"
+git push -u origin master
+// Existing Git repository
+cd existing_repo
+git remote add origin https://Israel.liu@git.zoom.us/Israel.liu/zoom_tools.git
+git push -u origin --all
+git push -u origin --tags
+```
+```
+// ssh
+[Generating Your SSH Public Key](https://git-scm.com/book/en/v2/Git-on-the-Server-Generating-Your-SSH-Public-Key)
+// Set use ssh branch
+git remote set-url origin git@git.zoom.us:main/client.git
+
+```CPP

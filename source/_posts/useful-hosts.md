@@ -42,3 +42,9 @@ tags:
 ### [Extensions for the Visual Studio](https://marketplace.visualstudio.com/)
 
 ### [CppCon](https://cppcon.org/)
+
+### [Virtual background](https://www.chromacam.me/#)
+
+### [MVVM](https://msdn.microsoft.com/en-us/library/gg405484.aspx)
+
+### [learnmvvm](http://www.learnmvvm.com/index.html)

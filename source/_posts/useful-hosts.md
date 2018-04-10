@@ -48,3 +48,9 @@ tags:
 ### [MVVM](https://msdn.microsoft.com/en-us/library/gg405484.aspx)
 
 ### [learnmvvm](http://www.learnmvvm.com/index.html)
+
+### [Media Foundation Transforms](https://msdn.microsoft.com/en-us/library/windows/desktop/ms703138.aspx)
+
+### [x86 Assembly Guide](http://www.cs.virginia.edu/~evans/cs216/guides/x86.html)
+
+### [Boost Chapter 39. Thread 4.8.0](http://www.boost.org/doc/libs/1_66_0/doc/html/thread.html)

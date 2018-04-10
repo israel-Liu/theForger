@@ -178,6 +178,7 @@ $ git merge experiment
 ```CPP
 // 比较复杂这里先不说了
 ```
+#### Set Use SSH
 ```CPP
 // Command line instructions
 Git global setup
@@ -203,10 +204,10 @@ git remote add origin https://Israel.liu@git.zoom.us/Israel.liu/zoom_tools.git
 git push -u origin --all
 git push -u origin --tags
 ```
-```
+```CPP
 // ssh
 [Generating Your SSH Public Key](https://git-scm.com/book/en/v2/Git-on-the-Server-Generating-Your-SSH-Public-Key)
 // Set use ssh branch
 git remote set-url origin git@git.zoom.us:main/client.git
 
-```CPP
+```

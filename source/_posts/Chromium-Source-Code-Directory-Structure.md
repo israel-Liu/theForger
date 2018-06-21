@@ -65,7 +65,7 @@ Chromium 主要由browser，renderer，Webkit三部分构成。浏览器是主�
  * testing: 单元测试开源工程 GTest
  * third_party: 外部依赖库。一些 Chrome-specific 存放在 chrome/third_party。
  * tools:
- * ui: ui/gfx: 图形库。 ui/views: 简单 UI 开发框架提供渲染，布局和时间处理。一些 browser-specific 放在 chrome/browser/ui/views。
+ * ui: ui/gfx: 图形库。 ui/views: 简单 UI 开发框架提供渲染，布局和事件处理。一些 browser-specific 放在 chrome/browser/ui/views。
  * url: 标准化 URL 解析库？(Google's open source URL parsing and canonicalization library.)
  * v8: Javascript V8 引擎。
  * webrunner:
@@ -98,11 +98,11 @@ Chromium 主要由browser，renderer，Webkit三部分构成。浏览器是主�
  * worker: Code for running HTML5 Web Workers.(只在文档列出)
  * zygote:
 
- #### Quick reference for the directory tree under "chrome/"
- 暂时不学习这块，先不列出。需要的时候补上。
+#### Quick reference for the directory tree under "chrome/"
+暂时不学习这块，先不列出。需要的时候补上。
 
- #### A personal learning plan
+#### A personal learning plan
 
- #### Code paths for common operations
+#### Code paths for common operations
 
- #### 后续先进行轮子学习。
+#### 后续先进行轮子学习。

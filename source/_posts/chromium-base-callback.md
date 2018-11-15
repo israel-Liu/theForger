@@ -40,9 +40,8 @@ There are three main components to the system:
   2) The `base::Bind()` functions.
   3) The arguments wrappers (e.g., `base::Unretained()` and `base::ConstRef()`).
 
-The Callback classes represent a generic function pointer. Internally, it
-stores a refcounted piece of state that represents the target function and all
-its bound parameters. The `base::Callback` constructor takes a
+类 Callback 代表一个通用函数指针. 内部存储一个代表目标函数和参数状态的引用计数类。
+The `base::Callback` constructor takes a
 `base::BindStateBase*`, which is upcasted from a `base::BindState<>`. In the
 context of the constructor, the static type of this `base::BindState<>` pointer
 uniquely identifies the function it is representing, all its bound parameters,

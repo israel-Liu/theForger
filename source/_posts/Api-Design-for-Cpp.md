@@ -182,3 +182,40 @@ Consider using Monostate instead of Singleton if you don’t need lazy initializ
 There are several alternatives to the Singleton pattern, including dependency injection, the Monostate pattern, and use of a session context.
 
 ### 3.3 FACTORY METHODS
+Constructors in C++ have several limitations, such as the following.
+1. No return result.
+2. Constrained naming.
+3. Statically bound creation. When constructing an object, you must specify the name of a concrete
+class that is known at compile time, for example, you might write: Foo* f = new Foo(),
+where Foo is a specific type that must be known by the compiler. There is no concept of dynamic
+binding at run time for constructors in C++.
+4. No virtual constructors.
+
+#### 3.3.1 Abstract Base Classes
+Should always declare the destructor of an abstract base class to be virtual.
+
+### 3.4 API WRAPPING PATTERNS
+
+#### 3.4.1 The Proxy Pattern
+
+#### 3.4.2 The Adapter Pattern
+
+#### 3.4.3 The Fac¸ade Pattern
+
+### 3.5 OBSERVER PATTERN
+
+#### 3.5.2 Implementing the Observer Pattern
+
+#### 3.5.3 Push versus Pull Observers
+
+### Design
+
+#### 4.1.2 Paying Back the Debt
+
+#### 4.2 GATHERING FUNCTIONAL REQUIREMENTS
+
+#### 4.3.3 Writing Good Use Cases
+
+#### 4.3.4 Requirements and Agile Development
+
+#### 4.5 ARCHITECTURE DESIGN

@@ -346,3 +346,93 @@ Only one group of shared pointers owns an object. 防止多次析构。还有很
 
 
 ### 5.3 Numeric Limits
+模板特殊化numeric_limits可以使用依赖平台的基础类型
+
+
+### 5.4 Type Traits and Type Utilities
+
+
+#### 5.4.1 Purpose of Type Traits
+
+	template <typename T1, typename T2>
+	struct common_type<T1,T2> {
+		typedef decltype(true ? declval<T1>() : declval<T2>()) type; // true ?
+	};
+	
+	
+#### 5.4.2 Type Traits in Detail
+[trivial type](https://blog.csdn.net/LaoJiu_/article/details/66472089)
+Note again that a reference to a constant type is not constant, so you can’t remove constness there.
+
+
+#### 5.4.3 Reference Wrappers
+	std::vector<std::reference_wrapper<MyClass>> coll;
+	
+
+#### 5.4.4 Function Type Wrappers
+	class C {
+	public:
+		void memfunc (int x, int y) const;
+	};
+	std::function<void(const C&,int,int)> mf;
+	mf = &C::memfunc;
+	mf(C(),42,77);
+
+	
+### 5.5 Auxiliary Functions
+
+
+#### 5.5.1 Processing the Minimum and Maximum
+For an initializer list, you need an internal temporary, so returning a reference would return a dangling reference.
+
+#### 5.5.2 Swapping Two Values
+
+
+#### 5.5.3 Supplementary Comparison Operators
+
+
+### 5.6 Compile-Time Fractional Arithmetic with Class ratio<>
+	namespace std {
+		template <intmax_t N, intmax_t D = 1>
+		class ratio {
+		public:
+			typedef ratio<num,den> type;
+			static constexpr intmax_t num;
+			static constexpr intmax_t den;
+		};
+	}
+
+### 5.7 Clocks and Timers
+C++ standard library provides the basic C and POSIX interfaces to deal with calendar time.
+![](https://github.com/israel-Liu/theForger/raw/master/images/ClocksAndTime.png)
+
+#### 5.7.1 Overview of the Chrono Library
+template <typename V, typename R>
+	ostream& operator << (ostream& s, const chrono::duration<V,R>& d)
+	{
+		s << "[" << d.count() << " of " << R::num << "/" << R::den << "]";
+		return s;
+	}
+
+	
+#### 5.7.3 Clocks and Timepoints
+系统时间调整？原点坐标调整吗，3种时钟还是有点没理解。各种定义比 Unicode 还难理解。
+UNIX epoch, January 1, 1970 ？ universal time (UTC) ？ 00:00 in Greenwich, UK. ？summertime ？
+
+
+#### 5.7.4 Date and Time Functions by C and POSIX
+time_t usually is just the number of seconds since the UNIX epoch, which is January 1, 1970.
+
+
+#### 5.7.5 Blocking with Timers
+计时器时间并不靠谱，包括一些没计算的耗时，还可能根据系统时间调整而变化。
+
+
+### 5.8 Header Files <cstddef>, <cstdlib>, and <cstring>
+主要就是C里面一些重要的东西在C++里的定义
+
+#### 5.8.2 Definitions in <cstdlib>
+	...
+
+## Chapter 6 The Standard Template Library
+

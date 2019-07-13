@@ -58,7 +58,17 @@ tags:
 ### [Boost Chapter 39. Thread 4.8.0](http://www.boost.org/doc/libs/1_66_0/doc/html/thread.html)
 
 ### [UTF-8, UTF-16, UTF-32 & BOM](http://www.unicode.org/faq/utf_bom.html)
+UTF-8 is byte oriented and therefore does not have that issue. Nevertheless, an initial BOM might be useful to identify the datastream as UTF-8.
+
 
 ### [研究STL的个人博客](https://www.fluentcpp.com/)
 
 ### [研究C++语言的个人博客](https://arne-mertz.de/)
+
+### [函数几种调用约定讲解](https://www.codeproject.com/Articles/1388/Calling-Conventions-Demystified)
+
+### [消息分析](https://docs.microsoft.com/en-us/message-analyzer/microsoft-message-analyzer-operating-guide)
+
+### [性能分析](https://docs.microsoft.com/en-us/windows/desktop/perfctrs/performance-counters-portal)
+
+### [Powershell](https://docs.microsoft.com/en-us/powershell/windows/get-started?view=win10-ps)

@@ -183,10 +183,10 @@ $ git merge experiment
 // Command line instructions
 Git global setup
 git config --global user.name "Israel.liu"
-git config --global user.email "israel.liu@zoom.us"
+git config --global user.email "israel.liu.theForger@gmail.com"
 // Create a new repository
-git clone https://Israel.liu@git.zoom.us/Israel.liu/zoom_tools.git
-cd zoom_tools
+git clone https://Israel.liu@github.com/Israel.liu/tools.git
+cd tools
 touch README.md
 git add README.md
 git commit -m "add README"
@@ -194,20 +194,32 @@ git push -u origin master
 // Existing folder
 cd existing_folder
 git init
-git remote add origin https://Israel.liu@git.zoom.us/Israel.liu/zoom_tools.git
+git remote add origin https://Israel.liu@github.com/Israel.liu/tools.git
 git add .
 git commit -m "Initial commit"
 git push -u origin master
 // Existing Git repository
 cd existing_repo
-git remote add origin https://Israel.liu@git.zoom.us/Israel.liu/zoom_tools.git
+git remote add origin https://Israel.liu@github.com/Israel.liu/tools.git
 git push -u origin --all
 git push -u origin --tags
 ```
 ```CPP
 // ssh
 [Generating Your SSH Public Key](https://git-scm.com/book/en/v2/Git-on-the-Server-Generating-Your-SSH-Public-Key)
+1.使用命令 ssh-keygen -o 这个命令会在 .ssh 下面生成两个id_rsa文件，有后缀 .pub 的是贴到网站上面的。没有的是 private key. 这个时候命令行已经可以了 .
+2.一些gui工具比如小乌龟需要 .ppk 类型的 private key。window上需要可以使用putty生成。https://www.putty.org/。
+3.load那个 private key 然后 save private key 到另外一种格式 .ppk 给小乌龟用就行了 
+
+
 // Set use ssh branch
-git remote set-url origin git@git.zoom.us:main/client.git
+git remote set-url origin git@git.github.com:main/client.git
 
 ```
+
+	branch-n-g 上更改了 InstanceMgr 里面的代码
+	branch-n 上也更改了 InstanceMgr 里面代码。
+
+	使用 git merge origin/branch-n 为啥没用更改下来 branch-n 上面的代码？
+	难道是因为我本地没有先执行 git merge origin/branch-n-g 把 branch-n-g 上面的代码更新下来？我记得我更新了啊
+	那为啥 执行 git merge origin/branch-n 就可以更新下来代码，是因为 merge 时候自动选取的节点不对吗？

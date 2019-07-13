@@ -6,7 +6,7 @@ tags:
 #### The Basics
 &nbsp;&nbsp;&nbsp;&nbsp;前面两篇写的都是我自己觉得比较难以理解的，现在开始为了某人就写一些基础知识，鉴于也不是完全的初学者，所以只能根据我的了解写，所以也不适合所有人看，当然我的blog也就没啥人看，菜鸡一个，哈哈，现在小透明课堂开课啦
 ##### Variables and Basic Types
-```CPP
+
 1.基本内置类型包括 数据类型（整型 int, bool, char, 和 浮点型 float, double）和空类型 void
   对于内置类型我们需要知道每个类型占多少字节（1 bytes == 8 bit）x86和x64相同类型可能占不同字节数我们可以用（sizeof）获取
   char一般是（1 byte）， C++规定 short <= int <=long <= long long，类型转换时候大到小会丢失数据(static_cast<>()）
@@ -23,4 +23,4 @@ tags:
 4.2 指针pointer指向另外一种类型，实现对其他对象的间接访问。指针本身是一个对象（占用4字节）所以你可以对指针进行拷贝和赋值而且无需在定义时候赋初值 int val = 42; int* p = &val;(指针存放某个对象的地址，用取地址符&获取对象地址), 指针访问对象通过解引用符（*）。空指针请自行了解。
 
 
-```
+## Part II: The C++ Library

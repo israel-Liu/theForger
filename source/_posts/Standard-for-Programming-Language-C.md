@@ -1,5 +1,5 @@
 ---
-title: Standard for Programming Language C++
+title: Standard for Programming Language C++ (n4727)
 date: 2017-11-16 15:27:29
 tags:
 ---
@@ -43,3 +43,7 @@ struct POD { // both trivial and standard-layout
 
 —end example ]
 ```
+
+
+## 17 Templates
+

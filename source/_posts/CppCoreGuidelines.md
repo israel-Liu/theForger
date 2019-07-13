@@ -3,7 +3,25 @@ title: CppCoreGuidelines
 date: 2018-09-21 11:19:27
 tags:
 ---
+
+## [静态分析](https://docs.microsoft.com/en-us/visualstudio/code-quality/code-analysis-for-c-cpp-overview?view=vs-2019)
+
 ## [C++ Core Guidelines](http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+
+### In: Introduction
+
+#### In.target: Target readership
+文档适用于 C++ / C 程序员
+
+#### In.aims: Aims
+目标是写出和底层语言效率相当的代码。[A rationale for semantically enhanced library languages](http://www.stroustrup.com/SELLrationale.pdf)
+The result is a subset of a superset of a language called a Semantically Enhanced Library Language.
+
+#### In.not: Non-aims
+
+#### In.force: Enforcement
+#### In.struct: The structure of this document
+#### In.sec: Major sections
 
 ### P: Philosophy
 

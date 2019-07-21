@@ -355,7 +355,7 @@ Only one group of shared pointers owns an object. 防止多次析构。还有很
 #### 5.4.1 Purpose of Type Traits
 
 	template <typename T1, typename T2>
-	struct common_type<T1,T2> {
+	struct common_type<T1, T2> {
 		typedef decltype(true ? declval<T1>() : declval<T2>()) type; // true ?
 	};
 	
@@ -700,6 +700,7 @@ _after, 后入。
 
 
 #### 7.7.2 Set and Multiset Operations
+```Cpp
 	c.lower_bound(val) // 返回第一个 >= val 值的位置，val 插入的第一个位置
 	c.upper_bound(val) // 返回第一个 > val 值的位置，val 插入的最后一个位置 [pos_val, end) 开区间
 	c.equal_range(val) // [begin_val, end_val)
@@ -714,7 +715,7 @@ _after, 后入。
 	if (pos != coll.end()) {
 		coll.erase(pos);              // set直接使用 coll.erase(value) multiset 使用单值的效率低。
 	}
-
+```
 	
 #### 7.7.3 Exception Handling
 
@@ -984,7 +985,7 @@ const T* container::data () const
 
 
 #### 9.4.1 Reverse Iterators
-物理位置和逻辑位置要分清楚，[开闭区间反向取值也是开闭区间)
+物理位置和逻辑位置要分清楚，(开闭区间反向取值也是开闭区间)
 
 
 #### 9.4.2 Insert Iterators

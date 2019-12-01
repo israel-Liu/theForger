@@ -4,7 +4,16 @@ date: 2017-11-16 15:54:11
 tags:
 ---
 1. Creating the source code
-2. Compiling [Precompiled](https://docs.microsoft.com/en-us/cpp/preprocessor/phases-of-translation)
+
+## 2. Compiling [Precompiled](https://docs.microsoft.com/en-us/cpp/preprocessor/phases-of-translation)
+[Compiler](https://en.wikipedia.org/wiki/Compiler)
+[Modern Compiler Design](https://books.google.com/books?id=zkpFTBtK7a4C&printsec=frontcover&dq=compiler+design+pdf&hl=en&sa=X&ved=2ahUKEwiU2trIzvLjAhVPs54KHaI6CC0Q6AEwAXoECAUQAg#v=onepage&q=compiler%20design%20pdf&f=false)
+编译器分三个阶段处理:front end -> middle end -> back end
+
+Front end: Preprocessing, lexical analysis, syntax analysis, semantic analysis. 
+Middle end: Analysis, Optimization
+Back end: Code generation
+
 3. Linking
 4. Loading
 5. Executing

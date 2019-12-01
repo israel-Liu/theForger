@@ -81,3 +81,21 @@ Netwide Assembler （简称 NASM）是一款基于英特尔 x86 架构的汇编�
 
 
 ### [Visio training](https://support.office.com/en-us/article/visio-training-e058bcfa-1d90-4653-afc6-e84d54cf94a6?ui=en-US&rs=en-US&ad=US)
+
+### [Networking Sequence Diagrams](http://www.eventhelix.com/RealtimeMantra/Networking/)
+各种协议沟通的序列图
+
+### [EventStudio](http://www.eventhelix.com/EventStudio/)
+编写代码生成序列图等。
+
+### [Linux Kernel](https://www.kernel.org/doc/html/latest/)
+
+### [MSBuild](https://docs.microsoft.com/zh-cn/visualstudio/msbuild/msbuild?view=vs-2019)
+
+### [cpp-standard-library-reference](https://docs.microsoft.com/en-us/cpp/standard-library/cpp-standard-library-reference?view=vs-2019)
+
+
+### [文档排版](https://pandoc.org/)
+
+
+### [Cpp 相关学习网站](http://www-h.eng.cam.ac.uk/help/tpl/languages/C++.html)

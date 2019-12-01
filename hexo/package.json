@@ -1,0 +1,9 @@
+{
+  "name": "hexo",
+  "version": "0.0.0",
+  "description": "hexo",
+  "main": "app.js",
+  "author": {
+    "name": ""
+  }
+}

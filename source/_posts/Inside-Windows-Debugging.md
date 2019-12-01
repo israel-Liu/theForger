@@ -38,6 +38,8 @@ Get sys local var and arg from stack pointer(esp register on x86, rsp register o
 ebp(frame pointer register) 存放返回值？还是被调用函数入口点？Save previous frame pointer.
 eip(instruction pointer register)存储下一条要执行的指令。
 "/” 切换调试模式(assembly vs. source). lm(列出所有加载的符号),!sym(加载的符号是否有争议)
+The PDB symbol files contain critical information to enable debugging, 
+such as the mappings between function names and their corresponding memory addresses, the types declared in the image, and also source-line information.
 
 #### Kernel-Mode Debugging
 Setting Code Breakpoints in Kernel-Mode Memory。

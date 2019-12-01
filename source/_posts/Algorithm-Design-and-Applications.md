@@ -1209,11 +1209,59 @@ Reinforcement, Creativity, Applications
 
 ### Chapter Notes
 
-
 ## Chapter 11 Divide-and-Conquer
 
-11.1 Recurrences and the Master Theorem. . . . . . . . . . 305
-11.2 Integer Multiplication . . . . . . . . . . . . . . . . . . . . 313
-11.3 Matrix Multiplication . . . . . . . . . . . . . . . . . . . . 315
-11.4 The Maxima-SetProblem . . . . . . . . . . . . . . . . . 317
-11.5 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . 319
+
+### 11.1 Recurrences and the Master Theorem. . . . . . . . . . 305
+recurrence equation(递归方程), iterative substitution(迭代替换), recursion tree(递归树)
+
+
+#### 11.1.1 The Master Theorem
+
+
+### 11.2 Integer Multiplication . . . . . . . . . . . . . . . . . . . . 313
+fast Fourier transform(快速傅里叶变换)
+
+
+### 11.3 Matrix Multiplication . . . . . . . . . . . . . . . . . . . . 315
+Strassen’s Algorithm, 
+
+
+### 11.4 The Maxima-SetProblem . . . . . . . . . . . . . . . . . 317
+```Cpp
+Algorithm MaximaSet(S):
+	Input: A set, S, of n points in the plane
+	Output: The set, M, of maxima points in S
+	
+	if n ≤ 1 then
+		return S
+	Let p be the median point in S, by lexicographic (x, y)-coordinates
+	Let L be the set of points lexicographically less than p in S
+	Let G be the set of points lexicographically greater than or equal to p in S
+	M1 ← MaximaSet(L)
+	M2 ← MaximaSet(G)
+	Let q be the lexicographically smallest point in M2
+	for each point, r, in M1 do
+		if x(r) ≤ x(q) and y(r) ≤ y(q) then
+			Remove r from M1
+	return M1 ∪ M2
+```
+
+### 11.5 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . 319
+
+
+### Chapter Notes
+
+
+## Chapter 12 Dynamic Programming
+
+12.1 Matrix Chain-Products . . . . . . . . . . . . . . . . . . . 325
+12.2 The General Technique . . . . . . . . . . . . . . . . . . 329
+12.3 Telescope Scheduling . . . . . . . . . . . . . . . . . . . 331
+12.4 Game Strategies . . . . . . . . . . . . . . . . . . . . . . 334
+12.5 The Longest Common Subsequence Problem . . . . . 339
+12.6 The 0-1 Knapsack Problem . . . . . . . . . . . . . . . . 343
+12.7 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . 346
+
+{% iframe https://docs.google.com/document/d/1KFuRlVRKZaXMP_IgeW_D65cgTILEkpuemHdFDPgOhvI/edit [1230] [1200] %}
+

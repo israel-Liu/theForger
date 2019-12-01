@@ -180,3 +180,7 @@ cond(no)->op
 实现换行
 两个空格以上加回车
 ```
+
+[Google documentation guide](https://github.com/google/styleguide/tree/gh-pages/docguide)
+[md_browser](https://chromium.googlesource.com/chromium/src/+/master/tools/md_browser)
+[Markdown](https://gerrit.googlesource.com/gitiles/+/master/Documentation/markdown.md)

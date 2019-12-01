@@ -22,6 +22,22 @@ called a `base::Closure`. Note that this is NOT the same as what other
 languages refer to as a closure -- it does not retain a reference to its
 enclosing environment.
 
+## Quick reference for basic stuff
+base::Bind() 可以用来绑定普通函数 Lambda 和成员函数(需要传递参数), 可以返回 
+1. A callback with no parameters or no unbound parameters is called a base::Closure
+2. base::OnceCallback<> 只运行一次
+3. base::RepeatingCallback<> 多次调用run
+base::DoNothing() can be passed for any OnceCallback or RepeatingCallback that returns void.
+Unbound parameters are specified at the time a callback is Run() 运行时候绑定
+Bound parameters are specified when you create the callback as arguments to base::Bind() 调用时候不需要了。
+You can specify some parameters when you create the callback, and specify the rest when you execute the callback.分开指定
+A parameter of base::BindRepeating() or base::BindOnce() is moved into its internal storage if it is passed as a rvalue.
+
+## Quick reference for advanced binding
+通过使用 base::Owned， base::Unretained， base::Owned， std::unique_ptr<>，std::move，包装函数对象参数，控制生命周期。
+scoped_refptr，std::ref or std::cref，base::RetainedRef 等都可以作用于参数。
+
+
 ## Implementation notes
 
 ### Where Is This Design From:

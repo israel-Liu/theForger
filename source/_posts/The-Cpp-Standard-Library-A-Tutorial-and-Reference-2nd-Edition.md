@@ -1088,8 +1088,7 @@ Lambdas are a language feature.
 	[count] (int) mutable { // remove criterion
 		return ++count == 3;
 	});
-
-
+```
 
 #### 10.3.3 Lambdas Calling Global and Member Functions
 注意区分捕获的变量，和参数传递的变量。
@@ -1098,8 +1097,7 @@ Lambdas are a language feature.
 
 #### 10.3.4 Lambdas as Hash Function, Sorting, or Equivalence Criterion
 Note again that you have to use decltype to pass the type of the lambda to the unordered_set because it creates its own instance of them.
-所以模板构造和构造函数构造对象都提供的模板类，什么时候用，怎么选择。
-
+所以模板构造和构造函数构造对象都提供的模板类，什么时候用，怎么选择.。
 
 
 ## Chapter 11 STL Algorithms
@@ -1112,35 +1110,196 @@ Note again that you have to use decltype to pass the type of the lambda to the u
 ### 11.2 Algorithm Overview
 
 
+
 #### 11.2.1 A Brief Introduction
+
+
 
 
 #### 11.2.2 Classification of Algorithms
 Nevertheless, to be safe, you should call merge() only for sorted ranges.
 
 
-#### 11.3 Auxiliary Functions
+### 11.3 Auxiliary Functions
 
 
+### 11.4 The for_each() Algorithm
 
 
+### 11.5 Nonmodifying Algorithms
+访问元素 without modifying their values or changing their order.
 
 
+#### 11.5.1 Counting Elements
 
 
+#### 11.5.2 Minimum and Maximum
 
 
+#### 11.5.3 Searching Elements
 
 
+#### 11.5.4 Comparing Ranges
 
 
+#### 11.5.5 Predicates for Ranges
 
 
+### 11.6 Modifying Algorithms
 
 
-	
-	
+#### 11.6.1 Copying Elements
 
+
+#### 11.6.2 Moving Elements
+
+
+#### 11.6.3 Transforming and Combining Elements
+
+
+#### 11.6.4 Swapping Elements
+
+
+#### 11.6.5 Assigning New Values
+
+
+#### 11.6.6 Replacing Elements
+
+
+### 11.7 Removing Algorithms
+
+
+#### 11.7.1 Removing Certain Values
+
+
+#### 11.7.2 Removing Duplicates
+
+
+### 11.8 Mutating Algorithms
+
+
+#### 11.8.1 Reversing the Order of Elements
+
+
+#### 11.8.2 Rotating Elements
+
+
+#### 11.8.3 Permuting Elements
+
+
+#### 11.8.4 Shuffling Elements
+
+
+#### 11.8.5 Moving Elements to the Front
+
+
+#### 11.8.6 Partition into Two Subranges
+
+
+### 11.9 Sorting Algorithms
+
+
+#### 11.9.1 Sorting All Elements
+
+
+#### 11.9.2 Partial Sorting
+
+
+#### 11.9.3 Sorting According to the nth Element
+
+
+#### 11.9.4 Heap Algorithms
+
+
+### 11.10 Sorted-Range Algorithms
+
+
+#### 11.10.1 Searching Elements
+
+
+#### 11.10.2 Merging Elements
+
+
+### 11.11 Numeric Algorithms
+
+
+#### 11.11.1 Processing Results
+
+
+#### 11.11.2 Converting Relative and Absolute Values
+
+
+## Chapter 12 Special Containers
+container adapters, which adapt standard STL containers to fit special needs, 
+or a bitset, which is a containers for bits or Boolean values
+
+
+### 12.1 Stacks
+std::stack<int,std::vector<int>> st; // integer stack that uses a vector
+
+
+#### 12.1.1 The Core Interface
+
+
+#### 12.1.2 Example of Using Stacks
+Note that pop() removes the next element but does not return it, whereas top() returns the next element without removing it
+
+
+#### 12.1.3 A User-Defined Stack Class
+[Stack](https://github.com/israel-Liu/fragments-of-time/blob/master/boruto/codeforces/basic_data_structures.h)
+
+
+#### 12.1.4 Class stack<> in Detail
+
+
+### 12.2 Queues
+容器适配器是把底层实现用容器吗。这样容器就有特殊功能。
+
+
+#### 12.2.1 The Core Interface
+
+
+#### 12.2.3 A User-Defined Queue Class
+
+
+#### 12.2.4 Class queue<> in Detail
+
+
+### 12.3 Priority Queues
+std::priority_queue<float,std::vector<float>, std::greater<float>> pbuffer;
+
+
+####  12.3.1 The Core Interface
+
+
+#### 12.3.2 Example of Using Priority Queues
+
+
+#### 12.3.3 Class priority_queue<> in Detail
+
+
+#### 12.4 Container Adapters in Detail
+
+
+#### 12.4.1 Type Definitions
+
+
+#### 12.4.2 Constructors
+
+
+#### 12.4.3 Supplementary Constructors for Priority Queues
+
+
+#### 12.4.4 Operations
+
+
+### 12.5 Bitsets
+
+
+#### 12.5.1 Examples of Using Bitsets
+
+
+#### 12.5.2 Class bitset in Detail
 
 
 ## Chapter 13 Strings
@@ -1268,7 +1427,8 @@ swap() 比 copy() 更快，下面函数第一个参数有歧义对于 0 .
 	
 
 #### 13.3.8 Searching and Finding
-反向找的函数起点参数用来定义区间的 [pos, end) 在这个区间内从后往前查找。
+反向找的函数起点参数用来定义区间的 [pos, end) 在这个区间内从后往前查找。]
+
 
 
 #### 13.3.9 Substrings and String Concatenation
@@ -1285,8 +1445,6 @@ If idxRet!=nullptr, it returns the index of the first character not processed fo
 
 
 #### 13.3.13 Allocator Support
-
-
 
 
 ## Chapter 14 Regular Expressions

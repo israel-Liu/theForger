@@ -45,8 +45,9 @@ Prefer declaring private functionality as static functions within the .cpp file 
 
 #### 2.3.2 Add Virtual Functions Judiciously
 As a general rule of thumb, if your API does not call a particular method internally, then that method probably should not be virtual.   
-interfaces should be non-virtual and they should use the Template Method design pattern where appropriate.    
-This is often referred to as the Non-Virtual Interface idiom (NVI).   
+interfaces should be non-virtual and they should use the Template Method design pattern where appropriate. 
+virtual function call is typically represented as an integer offset into the vtable for the class.   
+This is often referred to as the Non-Virtual Interface idiom [NVI](http://www.gotw.ca/publications/mill18.htm).   
 Add convenience APIs as separate modules or libraries that sit on top of your minimal core API.   
 
 #### 2.4 EASY TO USE

@@ -9,6 +9,9 @@ tags:
 近期需要对维护的代码进行重构，主要针对一个很大的类进行重构，为了不影响其他使用这个代码的人。     
 我们在保证对外接口不变的情况下对类进行分解。为了影响最小化先定规矩，每次只改当前任务涉及代码。   
 更改方式主要依据一下[两点](https://israel-liu.github.io/2018/09/21/CppCoreGuidelines/)  
+先弄好测试工具，可以自动测试正确性，首选寻找局部变量和参数，被修改的变量可以作为返回值。
+[Refactor code](https://docs.microsoft.com/en-us/visualstudio/ide/refactoring-in-visual-studio?view=vs-2019)
+[Edit and refactor C++ code in Visual Studio](https://docs.microsoft.com/en-us/cpp/ide/writing-and-refactoring-code-cpp?view=vs-2019)
 
 #### I.27: For stable library ABI, consider the Pimpl idiom
 Reason Because private data members participate in class layout and private member functions participate in overload resolution,     

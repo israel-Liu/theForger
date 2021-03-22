@@ -210,7 +210,7 @@ git push -u origin --tags
 1.使用命令 ssh-keygen -o 这个命令会在 .ssh 下面生成两个id_rsa文件，有后缀 .pub 的是贴到网站上面的。没有的是 private key. 这个时候命令行已经可以了 .
 2.一些gui工具比如小乌龟需要 .ppk 类型的 private key。window上需要可以使用putty生成。https://www.putty.org/。
 3.load那个 private key 然后 save private key 到另外一种格式 .ppk 给小乌龟用就行了 
-
+https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement
 
 // Set use ssh branch
 git remote set-url origin git@git.github.com:main/client.git

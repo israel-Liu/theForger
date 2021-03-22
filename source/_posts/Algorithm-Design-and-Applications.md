@@ -1255,13 +1255,19 @@ Algorithm MaximaSet(S):
 
 ## Chapter 12 Dynamic Programming
 
-12.1 Matrix Chain-Products . . . . . . . . . . . . . . . . . . . 325
-12.2 The General Technique . . . . . . . . . . . . . . . . . . 329
-12.3 Telescope Scheduling . . . . . . . . . . . . . . . . . . . 331
-12.4 Game Strategies . . . . . . . . . . . . . . . . . . . . . . 334
-12.5 The Longest Common Subsequence Problem . . . . . 339
-12.6 The 0-1 Knapsack Problem . . . . . . . . . . . . . . . . 343
-12.7 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . 346
+### 12.1 Matrix Chain-Products . . . . . . . . . . . . . . . . . . . 325
+
+### 12.2 The General Technique . . . . . . . . . . . . . . . . . . 329
+
+### 12.3 Telescope Scheduling . . . . . . . . . . . . . . . . . . . 331
+
+### 12.4 Game Strategies . . . . . . . . . . . . . . . . . . . . . . 334
+
+### 12.5 The Longest Common Subsequence Problem . . . . . 339
+
+### 12.6 The 0-1 Knapsack Problem . . . . . . . . . . . . . . . . 343
+
+### 12.7 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . 346
 
 {% iframe https://docs.google.com/document/d/1KFuRlVRKZaXMP_IgeW_D65cgTILEkpuemHdFDPgOhvI/edit [1230] [1200] %}
 

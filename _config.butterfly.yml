@@ -15,7 +15,7 @@ menu:
   相册: /gallery/ || fas fa-images
   分类: /categories/ || fas fa-folder-open
   标签: /tags/ || fas fa-tags
-  管理: /app/ || fas fa-cog
+  管理: /studio/ || fas fa-cog
   关于: /about/ || fas fa-heart
 
 # Code Blocks (保留给旧技术文章)

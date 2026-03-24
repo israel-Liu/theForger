@@ -2,7 +2,7 @@
   "name": "博客相册",
   "short_name": "博客相册",
   "description": "上传照片到 GitHub 图床，生成 Hexo 博客文章",
-  "start_url": "/app/",
+  "start_url": "/studio/",
   "display": "standalone",
   "background_color": "#f7f8fc",
   "theme_color": "#667eea",

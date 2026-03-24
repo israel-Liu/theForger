@@ -229,6 +229,7 @@ body {
 .status-badge {
   display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px;
   border-radius: 20px; font-size: 12px; font-weight: 500;
+  height: 32px; line-height: 1;
 }
 .status-badge.connected { background: #c6f6d5; color: #276749; }
 .status-badge.disconnected { background: #fed7d7; color: #9b2c2c; }
@@ -313,14 +314,14 @@ body {
       <div class="subtitle">上传照片 · 发布文章 · 全在手机上</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <a href="/" style="font-size:22px;text-decoration:none;color:var(--primary);" title="返回主页">🏠</a>
+      <a href="/" style="font-size:18px;text-decoration:none;color:var(--primary);display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(102,126,234,0.1);" title="返回主页">🏠</a>
       <span id="statusBadge" class="status-badge disconnected">未配置</span>
     </div>
   </div>
 </div>
 
 <div id="pageSetup" class="page">
-  <div class="setup-card">
+  <div class="setup-card" id="platformSwitchCard" style="display:none;">
     <h3>📡 当前工作平台</h3>
     <div class="platform-tabs" style="margin-bottom:8px;">
       <button class="platform-tab" id="activeBtnGithub" onclick="setActivePlatform('github')">🐙 GitHub</button>
@@ -330,9 +331,12 @@ body {
   </div>
 
   <div class="setup-card">
-    <div class="platform-tabs" style="margin-bottom:16px;">
+    <div class="platform-tabs" style="margin-bottom:16px;" id="cfgTabRow">
       <button class="platform-tab active" id="cfgTabGithub" onclick="showConfigTab('github')">🐙 GitHub 配置</button>
       <button class="platform-tab" id="cfgTabCodeup" onclick="showConfigTab('codeup')">☁️ Codeup 配置</button>
+    </div>
+    <div id="platformLabel" style="display:none;margin-bottom:16px;">
+      <h3 id="platformLabelText" style="font-size:16px;"></h3>
     </div>
 
     <div id="configGithub">
@@ -341,7 +345,7 @@ body {
       <div class="input-group"><label>图床仓库</label><input type="text" id="inputGhRepo" value="israel-Liu/blog-images"></div>
       <div class="input-group"><label>博客源码仓库</label><input type="text" id="inputGhBlogRepo" value="israel-Liu/theForger"></div>
       <div class="input-group"><label>CDN 域名前缀</label><input type="text" id="inputGhCdn" value="https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main"></div>
-      <button class="btn btn-primary" onclick="savePlatformConfig('github')">💾 保存 GitHub 配置</button>
+      <button class="btn btn-primary" onclick="savePlatformConfig('github')">💾 保存配置</button>
     </div>
 
     <div id="configCodeup" style="display:none;">
@@ -351,7 +355,7 @@ body {
       <div class="input-group"><label>博客仓库路径</label><input type="text" id="inputCuBlogRepo" value="69c25a5b43d4694d6a528ca9/blog/zybb"></div>
       <div class="input-group"><label>图片URL前缀</label><input type="text" id="inputCuCdn" value="/images"></div>
       <p style="font-size:11px;color:var(--text-light);margin-top:-10px;margin-bottom:12px;">默认使用相对路径（构建时图片自动打包进博客）。如有 OSS 可替换为完整 URL。</p>
-      <button class="btn btn-primary" onclick="savePlatformConfig('codeup')">💾 保存 Codeup 配置</button>
+      <button class="btn btn-primary" onclick="savePlatformConfig('codeup')">💾 保存配置</button>
     </div>
   </div>
 
@@ -550,17 +554,21 @@ body {
       <button class="insert-btn" onclick="loadArticles()" id="btnRefreshArticles">🔄 刷新</button>
     </div>
   </div>
-  <div id="articleFilters" style="margin-bottom:12px;">
-    <div class="category-selector" id="dateFilter" style="margin-bottom:8px;"></div>
-    <div class="category-selector" id="tagFilter"></div>
+
+  <div id="articleFilterSection">
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:10px;">📅 按日期筛选</p>
+    <div class="category-selector" id="dateFilter" style="margin-bottom:12px;"></div>
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:10px;">🏷️ 按标签筛选</p>
+    <div class="category-selector" id="tagFilter" style="margin-bottom:12px;"></div>
+    <div class="search-box">
+      <span class="s-icon">🔍</span>
+      <input type="text" id="articleSearch" placeholder="输入关键词搜索标题..." oninput="filterArticles()">
+      <button class="s-clear" id="searchClear" onclick="clearSearch()">✕</button>
+    </div>
   </div>
-  <div class="search-box">
-    <span class="s-icon">🔍</span>
-    <input type="text" id="articleSearch" placeholder="输入关键词进一步筛选..." oninput="filterArticles()">
-    <button class="s-clear" id="searchClear" onclick="clearSearch()">✕</button>
-  </div>
-  <div class="uploaded-list" id="articleList" style="max-height:calc(100vh - 300px);overflow-y:auto;-webkit-overflow-scrolling:touch;">
-    <div class="empty-state"><div class="icon">📝</div><p>点击刷新加载文章列表</p></div>
+
+  <div class="uploaded-list" id="articleList" style="max-height:calc(100vh - 340px);overflow-y:auto;-webkit-overflow-scrolling:touch;">
+    <div class="empty-state"><div class="icon">📋</div><p>选择日期或标签，或输入关键词搜索</p><p style="font-size:12px;margin-top:4px;color:var(--text-light);">也可点击右上角「刷新」加载全部</p></div>
   </div>
 </div>
 
@@ -640,6 +648,7 @@ function init() {
   }
 
   setActivePlatform(config.activePlatform, true);
+  applyPlatformUI(detectedPlatform);
   const pc = getPC();
   const savedTab = localStorage.getItem('activeTab');
   if (!pc.token) { switchTab('setup'); }
@@ -667,6 +676,33 @@ function setActivePlatform(p, skipSave) {
   document.getElementById('activeBtnCodeup').classList.toggle('active', p === 'codeup');
   updateStatus(!!getPC().token);
   if (!skipSave) { localStorage.setItem('blogUploader', JSON.stringify(config)); showToast('已切换到 ' + (p === 'github' ? 'GitHub' : 'Codeup')); }
+}
+
+function applyPlatformUI(detected) {
+  const switchCard = document.getElementById('platformSwitchCard');
+  const cfgTabRow = document.getElementById('cfgTabRow');
+  const platformLabel = document.getElementById('platformLabel');
+  const platformLabelText = document.getElementById('platformLabelText');
+
+  if (detected) {
+    switchCard.style.display = 'none';
+    cfgTabRow.style.display = 'none';
+    platformLabel.style.display = 'block';
+    if (detected === 'github') {
+      platformLabelText.textContent = '🐙 GitHub 配置';
+      document.getElementById('configGithub').style.display = 'block';
+      document.getElementById('configCodeup').style.display = 'none';
+    } else {
+      platformLabelText.textContent = '☁️ Codeup 配置';
+      document.getElementById('configGithub').style.display = 'none';
+      document.getElementById('configCodeup').style.display = 'block';
+    }
+  } else {
+    switchCard.style.display = 'block';
+    cfgTabRow.style.display = 'flex';
+    platformLabel.style.display = 'none';
+    showConfigTab(config.activePlatform);
+  }
 }
 
 function showConfigTab(tab) {
@@ -1500,24 +1536,37 @@ function applyArticleData(items, resetFilters) {
   if (resetFilters) {
     document.getElementById('articleSearch').value = '';
     document.getElementById('searchClear').style.display = 'none';
-    activeDate = null; activeTag = null;
   }
   buildFilters(items);
-  renderArticleList(getFilteredArticles());
+  document.getElementById('articleCount').textContent = `共 ${items.length} 篇`;
+  const hasFilter = activeDate || activeTag || document.getElementById('articleSearch').value.trim();
+  if (hasFilter) {
+    renderArticleList(getFilteredArticles(), true);
+  } else {
+    const listEl = document.getElementById('articleList');
+    listEl.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>选择日期或标签，或输入关键词搜索</p><p style="font-size:12px;margin-top:4px;color:var(--text-light);">已缓存 ' + items.length + ' 篇文章</p></div>';
+  }
 }
 
 function restoreOrLoadArticles() {
-  if (articlesLoaded) return;
   const cached = localStorage.getItem('cachedArticles');
   if (cached) {
     try {
       const items = JSON.parse(cached);
-      applyArticleData(items, true);
-      refreshArticlesInBackground();
+      allArticles = processArticleItems(items);
+      articlesLoaded = true;
+      buildFilters(allArticles);
+      const listEl = document.getElementById('articleList');
+      document.getElementById('articleCount').textContent = `共 ${allArticles.length} 篇`;
+      if (!activeDate && !activeTag) {
+        listEl.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>选择日期或标签，或输入关键词搜索</p><p style="font-size:12px;margin-top:4px;color:var(--text-light);">已缓存 ' + allArticles.length + ' 篇文章</p></div>';
+      } else {
+        renderArticleList(getFilteredArticles(), true);
+      }
       return;
     } catch(e) {}
   }
-  loadArticles();
+  buildDefaultFilters();
 }
 
 function refreshArticlesInBackground() {
@@ -1596,6 +1645,25 @@ async function loadArticles() {
 let activeDate = null;
 let activeTag = null;
 
+function buildDefaultFilters() {
+  const now = new Date();
+  const dateEl = document.getElementById('dateFilter');
+  let dhtml = '<div class="category-chip active" data-val="" onclick="pickDate(this)">全部</div>';
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const label = `${d.getFullYear()}年${d.getMonth()+1}月`;
+    dhtml += `<div class="category-chip" data-val="${key}" onclick="pickDate(this)">${label}</div>`;
+  }
+  dateEl.innerHTML = dhtml;
+
+  const tagEl = document.getElementById('tagFilter');
+  const defaultTags = ['宝宝', '旅行', '技术', '读书', '其他'];
+  let thtml = '<div class="category-chip active" data-val="" onclick="pickTag(this)">全部</div>';
+  defaultTags.forEach(t => { thtml += `<div class="category-chip" data-val="${t}" onclick="pickTag(this)">${t}</div>`; });
+  tagEl.innerHTML = thtml;
+}
+
 function buildFilters(items) {
   const dates = new Map();
   const tags = new Map();
@@ -1635,14 +1703,23 @@ function pickDate(el) {
   activeDate = el.dataset.val || null;
   el.parentElement.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
-  filterArticles();
+  triggerFilteredLoad();
 }
 
 function pickTag(el) {
   activeTag = el.dataset.val || null;
   el.parentElement.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
-  filterArticles();
+  triggerFilteredLoad();
+}
+
+function triggerFilteredLoad() {
+  if (articlesLoaded && allArticles.length) {
+    const filtered = getFilteredArticles();
+    renderArticleList(filtered, true);
+    return;
+  }
+  loadArticles();
 }
 
 function getFilteredArticles() {
@@ -1712,17 +1789,29 @@ function toggleMonth(el) {
   el.classList.toggle('collapsed');
 }
 
+let _filterDebounce = null;
 function filterArticles() {
   const q = document.getElementById('articleSearch').value.trim();
   document.getElementById('searchClear').style.display = q ? 'block' : 'none';
-  const filtered = getFilteredArticles();
-  renderArticleList(filtered, !!(activeDate || activeTag || q));
+  clearTimeout(_filterDebounce);
+  _filterDebounce = setTimeout(() => {
+    if (articlesLoaded && allArticles.length) {
+      renderArticleList(getFilteredArticles(), !!(activeDate || activeTag || q));
+    } else if (q.length >= 2) {
+      loadArticles();
+    }
+  }, 300);
 }
 
 function clearSearch() {
   document.getElementById('articleSearch').value = '';
   document.getElementById('searchClear').style.display = 'none';
-  renderArticleList(allArticles);
+  if (activeDate || activeTag) {
+    renderArticleList(getFilteredArticles(), true);
+  } else if (allArticles.length) {
+    const listEl = document.getElementById('articleList');
+    listEl.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>选择日期或标签，或输入关键词搜索</p><p style="font-size:12px;margin-top:4px;color:var(--text-light);">已缓存 ' + allArticles.length + ' 篇文章</p></div>';
+  }
 }
 
 async function openArticle(encodedPath, sha) {

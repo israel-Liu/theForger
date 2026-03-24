@@ -452,10 +452,13 @@ body {
       <label>正文（可选，支持 Markdown）</label>
       <textarea id="blogBody" rows="6" placeholder="写点什么..."></textarea>
       <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <button class="insert-btn" onclick="document.getElementById('inlineImageInput').click()">📷 插入图片</button>
         <button class="insert-btn" onclick="showVideoDialog()">🎬 插入视频</button>
         <button class="insert-btn" onclick="insertDivider()">➖ 分隔线</button>
         <button class="insert-btn" onclick="insertQuote()">💬 引用</button>
       </div>
+      <input type="file" id="inlineImageInput" accept="image/*" multiple hidden>
+      <div id="inlineUploadStatus" style="display:none;margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(102,126,234,0.08);font-size:12px;color:var(--primary);"></div>
     </div>
   </div>
 
@@ -579,6 +582,7 @@ function init() {
   else { switchTab('setup'); }
 
   document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+  document.getElementById('inlineImageInput').addEventListener('change', handleInlineImageUpload);
   document.querySelectorAll('.category-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
@@ -1108,6 +1112,48 @@ function insertQuote() {
   textarea.value = before + insert + after;
   textarea.focus();
   textarea.selectionStart = textarea.selectionEnd = textarea.value.length - after.length;
+}
+
+async function handleInlineImageUpload(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  const pc = getPC();
+  if (!pc.token) { showToast('请先配置 Token'); return; }
+
+  const statusEl = document.getElementById('inlineUploadStatus');
+  statusEl.style.display = 'block';
+  const textarea = document.getElementById('blogBody');
+  const batchId = Date.now().toString();
+  let done = 0;
+
+  for (const file of files) {
+    done++;
+    statusEl.textContent = `📷 上传中 ${done}/${files.length}：${file.name}`;
+    try {
+      const result = await uploadImage(file, file.name);
+      const cdnUrl = `${pc.cdn}/${currentCategory}/${result.safeName}`;
+
+      uploadedImages.unshift({
+        name: result.safeName, cdnUrl, category: currentCategory,
+        date: new Date().toISOString(), batch: batchId, selected: true
+      });
+
+      const pos = textarea.selectionStart || textarea.value.length;
+      const before = textarea.value.substring(0, pos);
+      const after = textarea.value.substring(pos);
+      const imgMd = (before && !before.endsWith('\n') ? '\n\n' : '') + `![${file.name}](${cdnUrl})\n\n`;
+      textarea.value = before + imgMd + after;
+      textarea.selectionStart = textarea.selectionEnd = pos + imgMd.length;
+    } catch (err) {
+      showToast('❌ 上传失败: ' + (err.message || err));
+    }
+  }
+
+  localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
+  renderUploadedList();
+  statusEl.textContent = `✅ ${done} 张图片已上传并插入正文`;
+  setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+  e.target.value = '';
 }
 
 /* ===== 模板与 AI 生成 ===== */

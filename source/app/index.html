@@ -155,6 +155,24 @@ body {
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
 .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+.search-box {
+  position: relative; margin-bottom: 12px;
+}
+.search-box input {
+  width: 100%; padding: 10px 14px 10px 36px; border: 1px solid var(--border);
+  border-radius: var(--radius); font-size: 14px; background: var(--card);
+  color: var(--text); outline: none; box-sizing: border-box;
+}
+.search-box input:focus { border-color: var(--primary); }
+.search-box .s-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 14px; color: var(--text-light); pointer-events: none;
+}
+.search-box .s-clear {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; font-size: 16px; color: var(--text-light);
+  cursor: pointer; padding: 4px; display: none;
+}
 .article-item {
   display: flex; align-items: center; padding: 14px; gap: 12px;
   border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s;
@@ -163,17 +181,25 @@ body {
 .article-item:last-child { border-bottom: none; }
 .article-item .a-icon { font-size: 28px; flex-shrink: 0; }
 .article-item .a-info { flex: 1; min-width: 0; }
-.article-item .a-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.article-item .a-meta { font-size: 11px; color: var(--text-light); margin-top: 3px; }
+.article-item .a-title { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.article-item .a-meta { font-size: 11px; color: var(--text-light); margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 .article-item .a-arrow { color: var(--text-light); font-size: 16px; flex-shrink: 0; }
+.a-tag {
+  display: inline-block; padding: 1px 6px; border-radius: 8px;
+  font-size: 10px; background: rgba(102,126,234,0.12); color: var(--primary);
+}
+.a-date { white-space: nowrap; }
 .month-header {
   display: flex; align-items: center; gap: 8px;
   padding: 10px 14px; background: var(--bg);
   font-size: 13px; font-weight: 600; color: var(--text-light);
-  position: sticky; top: 0; z-index: 1;
+  position: sticky; top: 0; z-index: 1; cursor: pointer; user-select: none;
 }
-.month-header .m-icon { font-size: 15px; }
+.month-header:active { background: var(--border); }
+.month-header .m-icon { font-size: 15px; transition: transform 0.2s; }
+.month-header.collapsed .m-icon { transform: rotate(-90deg); }
 .month-header .m-count { margin-left: auto; font-weight: 400; font-size: 11px; }
+.month-group.collapsed .article-item { display: none; }
 .status-badge {
   display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px;
   border-radius: 20px; font-size: 12px; font-weight: 500;
@@ -385,9 +411,17 @@ body {
 <div id="pageArticles" class="page">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
     <h3 style="font-size:16px;">📋 文章管理</h3>
-    <button class="insert-btn" onclick="loadArticles()" id="btnRefreshArticles">🔄 刷新</button>
+    <div style="display:flex;gap:6px;">
+      <span id="articleCount" style="font-size:11px;color:var(--text-light);align-self:center;"></span>
+      <button class="insert-btn" onclick="loadArticles()" id="btnRefreshArticles">🔄 刷新</button>
+    </div>
   </div>
-  <div class="uploaded-list" id="articleList" style="max-height:calc(100vh - 200px);overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div class="search-box">
+    <span class="s-icon">🔍</span>
+    <input type="text" id="articleSearch" placeholder="搜索文章标题..." oninput="filterArticles()">
+    <button class="s-clear" id="searchClear" onclick="clearSearch()">✕</button>
+  </div>
+  <div class="uploaded-list" id="articleList" style="max-height:calc(100vh - 250px);overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="empty-state"><div class="icon">📝</div><p>点击刷新加载文章列表</p></div>
   </div>
 </div>
@@ -410,6 +444,7 @@ let uploadedImages = [];
 let currentCategory = 'life';
 let articlesLoaded = false;
 let editingArticle = null;
+let allArticles = [];
 
 function init() {
   config = JSON.parse(localStorage.getItem('blogUploader') || '{}');
@@ -936,6 +971,7 @@ async function loadArticles() {
   if (!pc.token) { showToast('请先配置 Token'); return; }
   const listEl = document.getElementById('articleList');
   listEl.innerHTML = '<div class="empty-state"><div class="spinner"></div><p style="margin-top:12px;">加载中...</p></div>';
+  document.getElementById('articleCount').textContent = '';
 
   try {
     let items = [];
@@ -972,40 +1008,75 @@ async function loadArticles() {
       a.displayTitle = a.name.replace(/\.md$/, '').replace(/-\d{13}$/, '').replace(/-/g, ' ');
     });
     items.sort((a, b) => b.timestamp - a.timestamp || b.name.localeCompare(a.name));
+    allArticles = items;
     articlesLoaded = true;
-
-    if (!items.length) {
-      listEl.innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>暂无文章</p></div>';
-      return;
-    }
-
-    const groups = {};
-    items.forEach(a => {
-      const d = a.timestamp ? new Date(a.timestamp) : null;
-      const key = d ? `${d.getFullYear()}年${String(d.getMonth()+1).padStart(2,'0')}月` : '未知日期';
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(a);
-    });
-
-    let html = '';
-    for (const [month, list] of Object.entries(groups)) {
-      html += `<div class="month-header"><span class="m-icon">📅</span>${month}<span class="m-count">${list.length} 篇</span></div>`;
-      html += list.map(a => {
-        const dateStr = a.timestamp ? new Date(a.timestamp).toLocaleDateString('zh-CN', {month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}) : '';
-        return `<div class="article-item" onclick="openArticle('${encodeURIComponent(a.path)}','${a.sha}')">
-          <div class="a-icon">📄</div>
-          <div class="a-info">
-            <div class="a-title">${a.displayTitle}</div>
-            <div class="a-meta">${dateStr ? dateStr + ' · ' : ''}${a.name}</div>
-          </div>
-          <div class="a-arrow">›</div>
-        </div>`;
-      }).join('');
-    }
-    listEl.innerHTML = html;
+    document.getElementById('articleSearch').value = '';
+    document.getElementById('searchClear').style.display = 'none';
+    renderArticleList(items);
   } catch (err) {
     listEl.innerHTML = `<div class="empty-state"><div class="icon">❌</div><p>加载失败</p><p style="font-size:12px;margin-top:4px;">${err.message}</p></div>`;
   }
+}
+
+function renderArticleList(items, expandAll) {
+  const listEl = document.getElementById('articleList');
+  document.getElementById('articleCount').textContent = items.length ? `共 ${items.length} 篇` : '';
+
+  if (!items.length) {
+    listEl.innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>暂无文章</p></div>';
+    return;
+  }
+
+  const groups = {};
+  items.forEach(a => {
+    const d = a.timestamp ? new Date(a.timestamp) : null;
+    const key = d ? `${d.getFullYear()}年${String(d.getMonth()+1).padStart(2,'0')}月` : '未知日期';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(a);
+  });
+
+  let html = '';
+  let isFirst = true;
+  for (const [month, list] of Object.entries(groups)) {
+    const collapsed = expandAll ? false : !isFirst;
+    html += `<div class="month-group${collapsed ? ' collapsed' : ''}">`;
+    html += `<div class="month-header${collapsed ? ' collapsed' : ''}" onclick="toggleMonth(this)"><span class="m-icon">▼</span>${month}<span class="m-count">${list.length} 篇</span></div>`;
+    html += list.map(a => {
+      const d = a.timestamp ? new Date(a.timestamp) : null;
+      const dateStr = d ? `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '';
+      return `<div class="article-item" onclick="openArticle('${encodeURIComponent(a.path)}','${a.sha}')">
+        <div class="a-icon">📄</div>
+        <div class="a-info">
+          <div class="a-title">${a.displayTitle}</div>
+          <div class="a-meta"><span class="a-date">${dateStr}</span></div>
+        </div>
+        <div class="a-arrow">›</div>
+      </div>`;
+    }).join('');
+    html += '</div>';
+    isFirst = false;
+  }
+  listEl.innerHTML = html;
+}
+
+function toggleMonth(el) {
+  const group = el.parentElement;
+  group.classList.toggle('collapsed');
+  el.classList.toggle('collapsed');
+}
+
+function filterArticles() {
+  const q = document.getElementById('articleSearch').value.trim().toLowerCase();
+  document.getElementById('searchClear').style.display = q ? 'block' : 'none';
+  if (!q) { renderArticleList(allArticles); return; }
+  const filtered = allArticles.filter(a => a.displayTitle.toLowerCase().includes(q) || a.name.toLowerCase().includes(q));
+  renderArticleList(filtered, true);
+}
+
+function clearSearch() {
+  document.getElementById('articleSearch').value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  renderArticleList(allArticles);
 }
 
 async function openArticle(encodedPath, sha) {

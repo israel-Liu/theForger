@@ -23,8 +23,7 @@
 # npx hexo clean && npx hexo generate
 #
 # # 从 Codeup 克隆图片仓库并复制到 public/images/
-# git clone --depth 1 https://${CODEUP_TOKEN}@codeup.aliyun.com/69c25a5b43d4694d6a528ca9/blog/images.git _blog_images || \
-# git clone --depth 1 https://${CODEUP_TOKEN}@codeup.aliyun.com/69c25a5b43d4694d6a528ca9/blog/blog-images.git _blog_images
+# git clone --depth 1 https://${CODEUP_TOKEN}@codeup.aliyun.com/69c25a5b43d4694d6a528ca9/blog/images.git _blog_images
 # mkdir -p public/images
 # cp -r _blog_images/life _blog_images/daily _blog_images/food _blog_images/travel _blog_images/tech public/images/ 2>/dev/null || true
 # rm -rf _blog_images

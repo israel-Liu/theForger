@@ -499,6 +499,20 @@ body {
     </div>
   </div>
 
+  <div id="blogErrorLog" style="display:none;margin-bottom:16px;">
+    <div class="setup-card" style="padding:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="toggleBlogErrorLog()">
+          <span id="blogErrorArrow" style="font-size:12px;transition:transform 0.2s;">▼</span>
+          <h3 style="font-size:14px;color:var(--danger);">⚠️ 错误日志</h3>
+          <span id="blogErrorCount" style="font-size:11px;color:var(--text-light);"></span>
+        </div>
+        <button style="background:none;border:none;font-size:12px;color:var(--text-light);cursor:pointer;" onclick="clearBlogErrorLog()">清空</button>
+      </div>
+      <pre id="blogErrorBody" style="font-size:11px;color:var(--text);background:var(--bg);padding:10px;border-radius:8px;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;-webkit-overflow-scrolling:touch;"></pre>
+    </div>
+  </div>
+
   <div id="videoDialog" class="dialog-overlay" style="display:none;">
     <div class="dialog-box">
       <h3 style="margin-bottom:12px;">🎬 插入视频</h3>
@@ -1117,6 +1131,7 @@ async function publishPost() {
     if (detail === 'Failed to fetch') {
       detail = '网络请求失败。请检查：\n1. 手机网络是否正常\n2. Token 是否正确\n3. 仓库名是否填对（设置页面）';
     }
+    appendBlogErrorLog(`[发布] ❌ 发布失败\n  错误: ${detail}\n  平台: ${config.activePlatform}\n  博客仓库: ${pc.blogRepo || '未设置'}\n  分支: master`);
     statusEl.innerHTML = `
       <div class="publish-status">
         <div style="font-size:48px;margin-bottom:12px;">❌</div>
@@ -1281,6 +1296,13 @@ function triggerInlineUpload() {
 async function doInlineUpload(files) {
   if (!files.length) return;
   const pc = getPC();
+
+  if (config.activePlatform === 'codeup' && !pc.imageRepo) {
+    appendBlogErrorLog('[插入图片] Codeup 图床仓库路径未配置，请在设置页面填写「图床仓库路径」');
+    showToast('❌ 请先在设置里配置 Codeup 图床仓库路径');
+    return;
+  }
+
   const statusEl = document.getElementById('inlineUploadStatus');
   const btn = document.getElementById('btnInsertImg');
   statusEl.style.display = 'block';
@@ -1290,10 +1312,15 @@ async function doInlineUpload(files) {
   const textarea = document.getElementById('blogBody');
   const batchId = Date.now().toString();
   let success = 0;
+  let failed = 0;
+
+  appendBlogErrorLog(`[插入图片] 开始上传 ${files.length} 张图片，平台=${config.activePlatform}，分类=${currentCategory}`);
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     statusEl.textContent = `📷 上传中 ${i+1}/${files.length}：${file.name}`;
+    statusEl.style.background = 'rgba(102,126,234,0.08)';
+    statusEl.style.color = 'var(--primary)';
     try {
       const result = await uploadImage(file, file.name);
       const cdnUrl = `${pc.cdn}/${currentCategory}/${result.safeName}`;
@@ -1307,9 +1334,15 @@ async function doInlineUpload(files) {
       const imgMd = `![${file.name}](${cdnUrl})\n\n`;
       textarea.value = val + (val && !val.endsWith('\n') ? '\n\n' : '') + imgMd;
       success++;
+      appendBlogErrorLog(`[插入图片] ✅ 第 ${i+1} 张成功: ${result.safeName}`);
     } catch (err) {
-      statusEl.textContent = `❌ 第 ${i+1} 张失败: ${err.message || err}`;
-      await new Promise(r => setTimeout(r, 1500));
+      failed++;
+      const detail = err.message || String(err);
+      appendBlogErrorLog(`[插入图片] ❌ 第 ${i+1} 张失败: ${file.name}\n  错误: ${detail}\n  平台: ${config.activePlatform}\n  仓库: ${config.activePlatform === 'codeup' ? pc.imageRepo : pc.repo}`);
+      statusEl.textContent = `❌ 第 ${i+1} 张失败: ${detail}`;
+      statusEl.style.background = 'rgba(252,129,129,0.1)';
+      statusEl.style.color = 'var(--danger)';
+      await new Promise(r => setTimeout(r, 2000));
     }
   }
 
@@ -1318,11 +1351,21 @@ async function doInlineUpload(files) {
   btn.disabled = false;
   btn.textContent = '📷 插入图片';
 
-  if (success > 0) {
+  if (success > 0 && failed === 0) {
     statusEl.textContent = `✅ ${success} 张图片已上传并插入正文`;
+    statusEl.style.background = 'rgba(72,187,120,0.1)';
+    statusEl.style.color = 'var(--success)';
     showToast(`✅ ${success} 张图片已插入`);
+    setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+  } else if (success > 0 && failed > 0) {
+    statusEl.textContent = `⚠️ ${success} 张成功，${failed} 张失败（详见下方错误日志）`;
+    statusEl.style.background = 'rgba(237,137,54,0.1)';
+    statusEl.style.color = 'var(--warning)';
+  } else {
+    statusEl.textContent = `❌ 全部失败（${failed} 张），详见下方错误日志`;
+    statusEl.style.background = 'rgba(252,129,129,0.1)';
+    statusEl.style.color = 'var(--danger)';
   }
-  setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
 }
 
 /* ===== 模板与 AI 生成 ===== */
@@ -1478,13 +1521,50 @@ function showToast(msg) {
 }
 
 function appendErrorLog(msg) {
+  const time = new Date().toLocaleTimeString();
+  const entry = `[${time}] ${msg}\n\n`;
+
   const logEl = document.getElementById('errorLog');
   const body = document.getElementById('errorLogBody');
+  if (logEl && body) {
+    body.textContent += entry;
+    logEl.style.display = 'block';
+    body.scrollTop = body.scrollHeight;
+  }
+
+  appendBlogErrorLog(msg);
+}
+
+let _blogErrorCount = 0;
+
+function appendBlogErrorLog(msg) {
+  const logEl = document.getElementById('blogErrorLog');
+  const body = document.getElementById('blogErrorBody');
   if (!logEl || !body) return;
   const time = new Date().toLocaleTimeString();
   body.textContent += `[${time}] ${msg}\n\n`;
   logEl.style.display = 'block';
   body.scrollTop = body.scrollHeight;
+  _blogErrorCount++;
+  document.getElementById('blogErrorCount').textContent = `(${_blogErrorCount})`;
+}
+
+function toggleBlogErrorLog() {
+  const body = document.getElementById('blogErrorBody');
+  const arrow = document.getElementById('blogErrorArrow');
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    arrow.style.transform = 'rotate(0deg)';
+  } else {
+    body.style.display = 'none';
+    arrow.style.transform = 'rotate(-90deg)';
+  }
+}
+
+function clearBlogErrorLog() {
+  document.getElementById('blogErrorBody').textContent = '';
+  document.getElementById('blogErrorLog').style.display = 'none';
+  _blogErrorCount = 0;
 }
 
 /* ===== 文章管理 ===== */
@@ -1945,6 +2025,7 @@ async function saveEdit() {
     showToast('✅ 文章已保存');
     articlesLoaded = false;
   } catch (err) {
+    appendBlogErrorLog(`[保存] ❌ 保存失败\n  错误: ${err.message}\n  平台: ${config.activePlatform}\n  文件: ${editingArticle.path}`);
     statusEl.innerHTML = `<div class="publish-status"><div style="font-size:48px;margin-bottom:12px;">❌</div><h3>保存失败</h3><p style="color:var(--danger);font-size:13px;margin-top:8px;">${err.message}</p><div style="height:16px;"></div><button class="btn btn-warning" onclick="saveEdit()">🔄 重试</button></div>`;
     showToast('❌ 保存失败');
   }

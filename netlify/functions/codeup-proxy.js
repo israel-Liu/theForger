@@ -21,8 +21,6 @@ exports.handler = async (event) => {
     };
   }
 
-  // The client sends the portion after /repositories/ as the query param "path"
-  // e.g. /.netlify/functions/codeup-proxy?path=<repoId>/files&filePath=...&ref=master
   const params = new URLSearchParams(event.rawQuery || '');
   const apiPath = params.get('path');
   if (!apiPath) {
@@ -33,21 +31,23 @@ exports.handler = async (event) => {
     };
   }
 
-  // Rebuild remaining query string (everything except "path")
   params.delete('path');
   const qs = params.toString();
   const targetUrl = `${CODEUP_BASE}/${apiPath}${qs ? '?' + qs : ''}`;
 
   try {
-    const upstream = await fetch(targetUrl, {
+    const fetchOptions = {
       method: event.httpMethod,
       headers: {
         'x-yunxiao-token': token,
         'Content-Type': 'application/json',
       },
-      ...(event.body ? { body: event.body } : {}),
-    });
+    };
+    if (event.body) {
+      fetchOptions.body = event.body;
+    }
 
+    const upstream = await fetch(targetUrl, fetchOptions);
     const responseBody = await upstream.text();
 
     return {
@@ -55,6 +55,9 @@ exports.handler = async (event) => {
       headers: {
         ...CORS_HEADERS,
         'Content-Type': upstream.headers.get('content-type') || 'application/json',
+        'X-Proxy-Target': targetUrl,
+        'X-Proxy-Method': event.httpMethod,
+        'X-Proxy-Upstream-Status': String(upstream.status),
       },
       body: responseBody,
     };
@@ -62,7 +65,12 @@ exports.handler = async (event) => {
     return {
       statusCode: 502,
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Proxy error', message: err.message }),
+      body: JSON.stringify({
+        error: 'Proxy fetch failed',
+        message: err.message,
+        targetUrl,
+        method: event.httpMethod,
+      }),
     };
   }
 };

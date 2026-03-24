@@ -395,6 +395,15 @@ body {
     <div style="height:8px;"></div>
     <button class="btn btn-secondary" onclick="clearAll()">🗑️ 清空</button>
   </div>
+  <div id="errorLog" style="display:none;margin-bottom:16px;">
+    <div class="setup-card" style="padding:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <h3 style="font-size:14px;color:var(--danger);">📋 错误日志</h3>
+        <button style="background:none;border:none;font-size:12px;color:var(--text-light);cursor:pointer;" onclick="document.getElementById('errorLogBody').textContent='';document.getElementById('errorLog').style.display='none';">清空</button>
+      </div>
+      <pre id="errorLogBody" style="font-size:11px;color:var(--text);background:var(--bg);padding:10px;border-radius:8px;max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;"></pre>
+    </div>
+  </div>
   <div id="uploadResult" style="display:none;margin-top:16px;">
     <div class="setup-card" style="text-align:center;">
       <div style="font-size:48px;margin-bottom:8px;">✅</div>
@@ -714,7 +723,7 @@ async function uploadAll() {
         date: new Date().toISOString(),
         batch: batchId
       });
-    } catch (err) { f.status = 'error'; console.error(err); showToast('❌ ' + (err.message || err)); }
+    } catch (err) { f.status = 'error'; console.error(err); appendErrorLog(`${f.name}: ${err.message || err}`); showToast('❌ ' + (err.message || err)); }
     done++;
     fill.style.width = (done/total*100)+'%';
     renderPreview();
@@ -761,12 +770,18 @@ async function uploadToCodeup(file, filename) {
   const filePath = `${currentCategory}/${safeName}`;
   const base64 = await fileToBase64(file);
   const repoId = encodeURIComponent(cu.imageRepo);
-  const res = await codeupFetch(`${repoId}/files`, {
+  const apiPath = `${repoId}/files`;
+  appendErrorLog(`[upload] repo=${cu.imageRepo} path=${filePath} file=${filename} size=${(file.size/1024).toFixed(1)}KB`);
+  const res = await codeupFetch(apiPath, {
     method: 'POST',
     headers: { 'x-yunxiao-token': cu.token, 'Content-Type': 'application/json' },
     body: JSON.stringify({ branch: 'main', commitMessage: `upload: ${safeName}`, content: base64, encoding: 'base64', filePath: encodeURIComponent(filePath) })
   });
-  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.errorMessage || e.message || res.status); }
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    appendErrorLog(`[upload FAIL] HTTP ${res.status}\nURL: ${res.url}\nResponse: ${body}`);
+    throw new Error(`HTTP ${res.status}: ${body.slice(0, 200)}`);
+  }
   return { safeName };
 }
 
@@ -1326,6 +1341,16 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function appendErrorLog(msg) {
+  const logEl = document.getElementById('errorLog');
+  const body = document.getElementById('errorLogBody');
+  if (!logEl || !body) return;
+  const time = new Date().toLocaleTimeString();
+  body.textContent += `[${time}] ${msg}\n\n`;
+  logEl.style.display = 'block';
+  body.scrollTop = body.scrollHeight;
 }
 
 /* ===== 文章管理 ===== */

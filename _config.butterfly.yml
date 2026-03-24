@@ -11,6 +11,7 @@ nav:
 
 menu:
   主页: / || fas fa-home
+  搜索: /search/ || fas fa-search
   时间线: /archives/ || fas fa-archive
   相册: /gallery/ || fas fa-images
   分类: /categories/ || fas fa-folder-open
@@ -255,14 +256,8 @@ busuanzi:
 # --------------------------------------
 
 search:
-  use: local_search
-  placeholder: 搜索文章...
-
-  local_search:
-    preload: false
-    top_n_per_article: 1
-    unescape: false
-    CDN:
+  use:
+  placeholder:
 
 # --------------------------------------
 # Share

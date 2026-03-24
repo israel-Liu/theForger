@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>搜索 | Licca的生活记录</title>
+<style>
+:root {
+  --primary: #49b1f5;
+  --primary-bg: rgba(73,177,245,0.08);
+  --bg: #f7f8fc;
+  --card: #ffffff;
+  --text: #4c4948;
+  --text-light: #858585;
+  --border: #e3e8f7;
+  --radius: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #121212; --card: #1e1e1e; --text: #ccd0d7; --text-light: #8b8d90; --border: #3b3d42; }
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg); color: var(--text); min-height: 100vh;
+}
+.container { max-width: 860px; margin: 0 auto; padding: 20px 16px 60px; }
+.back-nav {
+  display: inline-flex; align-items: center; gap: 6px; color: var(--primary);
+  text-decoration: none; font-size: 14px; margin-bottom: 20px;
+}
+.back-nav:hover { text-decoration: underline; }
+h1 { font-size: 24px; margin-bottom: 6px; }
+.subtitle { font-size: 14px; color: var(--text-light); margin-bottom: 24px; }
+.search-input-wrap {
+  position: relative; margin-bottom: 20px;
+}
+.search-input-wrap input {
+  width: 100%; padding: 14px 16px 14px 44px; border: 2px solid var(--border);
+  border-radius: var(--radius); font-size: 16px; background: var(--card);
+  color: var(--text); outline: none; transition: border-color 0.2s;
+}
+.search-input-wrap input:focus { border-color: var(--primary); }
+.search-input-wrap .icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 18px; color: var(--text-light); pointer-events: none;
+}
+.section-title {
+  font-size: 14px; font-weight: 600; color: var(--text-light); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.chip-wrap {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+}
+.chip {
+  padding: 6px 14px; border-radius: 20px; font-size: 13px;
+  border: 1px solid var(--border); background: var(--card);
+  cursor: pointer; transition: all 0.2s; color: var(--text);
+  white-space: nowrap;
+}
+.chip:hover { border-color: var(--primary); color: var(--primary); }
+.chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+.chip .count { font-size: 11px; opacity: 0.7; margin-left: 2px; }
+.results-info {
+  font-size: 13px; color: var(--text-light); margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.results-info .clear-btn {
+  color: var(--primary); cursor: pointer; background: none; border: none;
+  font-size: 13px;
+}
+.article-list { list-style: none; }
+.article-list li {
+  background: var(--card); border-radius: var(--radius); padding: 16px;
+  margin-bottom: 10px; border: 1px solid var(--border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.article-list li:hover {
+  border-color: var(--primary); box-shadow: 0 2px 12px rgba(73,177,245,0.1);
+}
+.article-list li a { text-decoration: none; color: inherit; display: block; }
+.article-list .a-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; line-height: 1.4; }
+.article-list .a-meta {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  font-size: 12px; color: var(--text-light);
+}
+.article-list .tag {
+  display: inline-block; padding: 2px 8px; border-radius: 8px;
+  font-size: 11px; background: var(--primary-bg); color: var(--primary);
+}
+.empty-msg {
+  text-align: center; padding: 60px 20px; color: var(--text-light);
+}
+.empty-msg .icon { font-size: 48px; margin-bottom: 12px; }
+.loading {
+  text-align: center; padding: 40px; color: var(--text-light); font-size: 14px;
+}
+.loading .spinner {
+  display: inline-block; width: 24px; height: 24px;
+  border: 3px solid var(--border); border-top-color: var(--primary);
+  border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="/" class="back-nav">← 返回主页</a>
+  <h1>🔍 搜索文章</h1>
+  <p class="subtitle">选择标签或日期快速筛选，或输入关键词搜索标题</p>
+
+  <div class="search-input-wrap">
+    <span class="icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="输入关键词搜索标题...">
+  </div>
+
+  <div class="section-title">🏷️ 按标签</div>
+  <div class="chip-wrap" id="tagChips">
+    <div class="loading"><div class="spinner"></div><br>加载中...</div>
+  </div>
+
+  <div class="section-title">📅 按日期</div>
+  <div class="chip-wrap" id="dateChips">
+    <div class="loading"><div class="spinner"></div><br>加载中...</div>
+  </div>
+
+  <div id="resultsSection" style="display:none;">
+    <div class="results-info">
+      <span id="resultsInfo"></span>
+      <button class="clear-btn" onclick="clearFilters()">清除筛选</button>
+    </div>
+    <ul class="article-list" id="articleList"></ul>
+  </div>
+
+  <div id="defaultMsg" class="empty-msg">
+    <div class="icon">☝️</div>
+    <p>选择标签或日期，或输入关键词开始搜索</p>
+  </div>
+</div>
+
+<script>
+let articles = [];
+let activeTag = null;
+let activeDate = null;
+
+async function loadIndex() {
+  try {
+    const res = await fetch('/search.xml');
+    const text = await res.text();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(text, 'text/xml');
+    const entries = xml.querySelectorAll('entry');
+
+    entries.forEach(entry => {
+      const title = entry.querySelector('title')?.textContent || '';
+      const url = entry.querySelector('url')?.textContent || '';
+      const tags = Array.from(entry.querySelectorAll('tags > tag')).map(t => t.textContent);
+      const categories = Array.from(entry.querySelectorAll('categories > category')).map(c => c.textContent);
+      const dateMatch = url.match(/\/(\d{4})\/(\d{2})\/(\d{2})\//);
+      const dateStr = dateMatch ? `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}` : '';
+      const monthKey = dateMatch ? `${dateMatch[1]}-${dateMatch[2]}` : '';
+      const monthLabel = dateMatch ? `${dateMatch[1]}年${parseInt(dateMatch[2])}月` : '';
+
+      articles.push({ title, url, tags, categories, dateStr, monthKey, monthLabel });
+    });
+
+    buildChips();
+  } catch (err) {
+    document.getElementById('tagChips').innerHTML = '<span style="color:#e53e3e;">加载失败，请刷新重试</span>';
+    document.getElementById('dateChips').innerHTML = '';
+  }
+}
+
+function buildChips() {
+  const tagMap = new Map();
+  const dateMap = new Map();
+
+  articles.forEach(a => {
+    a.tags.forEach(t => tagMap.set(t, (tagMap.get(t) || 0) + 1));
+    a.categories.forEach(c => tagMap.set(c, (tagMap.get(c) || 0) + 1));
+    if (a.monthKey) dateMap.set(a.monthKey, { label: a.monthLabel, count: (dateMap.get(a.monthKey)?.count || 0) + 1 });
+  });
+
+  const tagEl = document.getElementById('tagChips');
+  const sorted = [...tagMap.entries()].sort((a, b) => b[1] - a[1]);
+  tagEl.innerHTML = sorted.map(([t, c]) =>
+    `<span class="chip" onclick="pickTag(this, '${t.replace(/'/g, "\\'")}')">${t}<span class="count">(${c})</span></span>`
+  ).join('');
+
+  const dateEl = document.getElementById('dateChips');
+  const dateSorted = [...dateMap.entries()].sort().reverse();
+  dateEl.innerHTML = dateSorted.map(([key, v]) =>
+    `<span class="chip" onclick="pickDate(this, '${key}')">${v.label}<span class="count">(${v.count})</span></span>`
+  ).join('');
+}
+
+function pickTag(el, tag) {
+  if (activeTag === tag) { activeTag = null; el.classList.remove('active'); }
+  else {
+    document.querySelectorAll('#tagChips .chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    activeTag = tag;
+  }
+  renderResults();
+}
+
+function pickDate(el, date) {
+  if (activeDate === date) { activeDate = null; el.classList.remove('active'); }
+  else {
+    document.querySelectorAll('#dateChips .chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    activeDate = date;
+  }
+  renderResults();
+}
+
+function clearFilters() {
+  activeTag = null;
+  activeDate = null;
+  document.getElementById('searchInput').value = '';
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('defaultMsg').style.display = 'block';
+}
+
+function renderResults() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const hasFilter = activeTag || activeDate || q;
+
+  if (!hasFilter) {
+    document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('defaultMsg').style.display = 'block';
+    return;
+  }
+
+  let list = articles;
+  if (activeTag) {
+    list = list.filter(a => a.tags.includes(activeTag) || a.categories.includes(activeTag));
+  }
+  if (activeDate) {
+    list = list.filter(a => a.monthKey === activeDate);
+  }
+  if (q) {
+    list = list.filter(a => a.title.toLowerCase().includes(q));
+  }
+
+  document.getElementById('defaultMsg').style.display = 'none';
+  document.getElementById('resultsSection').style.display = 'block';
+
+  const filters = [];
+  if (activeTag) filters.push(`标签「${activeTag}」`);
+  if (activeDate) filters.push(`日期「${activeDate}」`);
+  if (q) filters.push(`关键词「${q}」`);
+  document.getElementById('resultsInfo').textContent = `${filters.join(' + ')} — 找到 ${list.length} 篇`;
+
+  const listEl = document.getElementById('articleList');
+  if (!list.length) {
+    listEl.innerHTML = '<div class="empty-msg"><div class="icon">🔍</div><p>没有找到匹配的文章</p></div>';
+    return;
+  }
+
+  listEl.innerHTML = list.map(a => {
+    const tagHtml = a.tags.map(t => `<span class="tag">${t}</span>`).join('');
+    return `<li><a href="${a.url}">
+      <div class="a-title">${a.title}</div>
+      <div class="a-meta">
+        <span>📅 ${a.dateStr}</span>
+        ${a.categories.map(c => `<span>📁 ${c}</span>`).join('')}
+        ${tagHtml}
+      </div>
+    </a></li>`;
+  }).join('');
+}
+
+let debounceTimer;
+document.getElementById('searchInput').addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(renderResults, 300);
+});
+
+loadIndex();
+</script>
+</body>
+</html>

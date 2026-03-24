@@ -538,6 +538,19 @@ body {
 <script>
 const GITHUB_API = 'https://api.github.com';
 const CODEUP_API = 'https://codeup.aliyun.com/oapi/v1/codeup/organizations/repositories';
+const CODEUP_PROXY = '/.netlify/functions/codeup-proxy';
+
+function codeupFetch(apiPath, options = {}) {
+  const sep = apiPath.indexOf('?');
+  let proxyUrl;
+  if (sep >= 0) {
+    proxyUrl = `${CODEUP_PROXY}?path=${encodeURIComponent(apiPath.slice(0, sep))}&${apiPath.slice(sep + 1)}`;
+  } else {
+    proxyUrl = `${CODEUP_PROXY}?path=${encodeURIComponent(apiPath)}`;
+  }
+  return fetch(proxyUrl, options);
+}
+
 let config = {};
 let selectedFiles = [];
 let uploadedImages = [];
@@ -577,8 +590,9 @@ function init() {
 
   setActivePlatform(config.activePlatform, true);
   const pc = getPC();
-  if (pc.token) { updateStatus(true); switchTab('upload'); }
-  else { switchTab('setup'); }
+  const savedTab = localStorage.getItem('activeTab');
+  if (!pc.token) { switchTab('setup'); }
+  else { updateStatus(true); switchTab(savedTab || 'upload'); }
 
   document.getElementById('fileInput').addEventListener('change', handleFileSelect);
   document.querySelectorAll('.category-chip').forEach(chip => {
@@ -641,6 +655,7 @@ function switchTab(name) {
   document.querySelectorAll('.tab-item')[ {upload:0,blog:1,articles:2,setup:3}[name] ].classList.add('active');
   if (name === 'blog') renderUploadedList();
   if (name === 'articles' && !articlesLoaded) loadArticles();
+  localStorage.setItem('activeTab', name);
 }
 
 function handleFileSelect(e) {
@@ -746,7 +761,7 @@ async function uploadToCodeup(file, filename) {
   const filePath = `${currentCategory}/${safeName}`;
   const base64 = await fileToBase64(file);
   const repoId = encodeURIComponent(cu.imageRepo);
-  const res = await fetch(`${CODEUP_API}/${repoId}/files`, {
+  const res = await codeupFetch(`${repoId}/files`, {
     method: 'POST',
     headers: { 'x-yunxiao-token': cu.token, 'Content-Type': 'application/json' },
     body: JSON.stringify({ branch: 'main', commitMessage: `upload: ${safeName}`, content: base64, encoding: 'base64', filePath: encodeURIComponent(filePath) })
@@ -920,7 +935,7 @@ async function publishPost() {
 
     if (isCodeup) {
       const repoId = encodeURIComponent(pc.blogRepo);
-      const res = await fetch(`${CODEUP_API}/${repoId}/files`, {
+      const res = await codeupFetch(`${repoId}/files`, {
         method: 'POST',
         headers: { 'x-yunxiao-token': pc.token, 'Content-Type': 'application/json' },
         body: JSON.stringify({ branch: 'master', commitMessage: `post: ${result.title}`, content: content, encoding: 'base64', filePath: encodeURIComponent(path) })
@@ -1356,7 +1371,7 @@ async function loadArticles() {
     let items = [];
     if (config.activePlatform === 'codeup') {
       const repoId = encodeURIComponent(pc.blogRepo);
-      const res = await fetch(`${CODEUP_API}/${repoId}/files?filePath=${encodeURIComponent('source/_posts')}&ref=master`, {
+      const res = await codeupFetch(`${repoId}/files?filePath=${encodeURIComponent('source/_posts')}&ref=master`, {
         headers: { 'x-yunxiao-token': pc.token }
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1468,7 +1483,7 @@ async function openArticle(encodedPath, sha) {
     if (config.activePlatform === 'codeup') {
       const repoId = encodeURIComponent(pc.blogRepo);
       const ep = encodeURIComponent(filePath);
-      const res = await fetch(`${CODEUP_API}/${repoId}/files/${ep}?ref=master`, {
+      const res = await codeupFetch(`${repoId}/files/${ep}?ref=master`, {
         headers: { 'x-yunxiao-token': pc.token }
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1556,7 +1571,7 @@ async function saveEdit() {
 
     if (isCodeup) {
       const repoId = encodeURIComponent(pc.blogRepo);
-      const res = await fetch(`${CODEUP_API}/${repoId}/files`, {
+      const res = await codeupFetch(`${repoId}/files`, {
         method: 'PUT',
         headers: { 'x-yunxiao-token': pc.token, 'Content-Type': 'application/json' },
         body: JSON.stringify({

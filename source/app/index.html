@@ -20,295 +20,159 @@
   --border: #e2e8f0;
   --success: #48bb78;
   --danger: #fc8181;
+  --warning: #ed8936;
   --radius: 16px;
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg); color: var(--text);
   min-height: 100vh;
   padding-top: var(--safe-top);
   padding-bottom: calc(70px + var(--safe-bottom));
   -webkit-tap-highlight-color: transparent;
 }
-
-/* Header */
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: sticky; top: 0; z-index: 100;
   background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
-  padding: 12px 20px;
-  padding-top: calc(12px + var(--safe-top));
+  padding: 12px 20px; padding-top: calc(12px + var(--safe-top));
 }
 .header h1 { font-size: 20px; font-weight: 700; }
 .header .subtitle { font-size: 12px; color: var(--text-light); }
-
-/* Tab Bar */
 .tab-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
   display: flex;
   background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--border);
   padding-bottom: var(--safe-bottom);
 }
 .tab-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 0;
-  font-size: 10px;
-  color: var(--text-light);
-  cursor: pointer;
-  transition: color 0.2s;
-  border: none;
-  background: none;
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding: 8px 0; font-size: 10px; color: var(--text-light);
+  cursor: pointer; border: none; background: none; transition: color 0.2s;
 }
 .tab-item.active { color: var(--primary); }
 .tab-item .icon { font-size: 24px; margin-bottom: 2px; }
-
-/* Pages */
 .page { display: none; padding: 16px; }
 .page.active { display: block; }
-
-/* Setup Page */
 .setup-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 24px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  background: var(--card); border-radius: var(--radius);
+  padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 .setup-card h3 { margin-bottom: 16px; font-size: 16px; }
 .input-group { margin-bottom: 16px; }
 .input-group label { display: block; font-size: 13px; color: var(--text-light); margin-bottom: 6px; }
-.input-group input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: 16px;
-  outline: none;
-  transition: border-color 0.2s;
+.input-group input, .input-group textarea {
+  width: 100%; padding: 12px; border: 1px solid var(--border);
+  border-radius: 10px; font-size: 16px; outline: none; transition: border-color 0.2s;
+  font-family: inherit;
 }
-.input-group input:focus { border-color: var(--primary); }
-
-/* Buttons */
+.input-group input:focus, .input-group textarea:focus { border-color: var(--primary); }
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 24px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  width: 100%;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 24px; border: none; border-radius: 12px;
+  font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%;
 }
+.btn:disabled { opacity: 0.5; }
 .btn-primary { background: var(--primary); color: white; }
 .btn-primary:active { background: var(--primary-dark); transform: scale(0.98); }
 .btn-secondary { background: var(--border); color: var(--text); }
 .btn-success { background: var(--success); color: white; }
-.btn-small { padding: 8px 16px; font-size: 14px; width: auto; }
-
-/* Upload Page */
+.btn-warning { background: var(--warning); color: white; }
 .upload-zone {
-  background: var(--card);
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
-  padding: 40px 20px;
-  text-align: center;
-  margin-bottom: 16px;
-  cursor: pointer;
-  transition: border-color 0.2s;
+  background: var(--card); border: 2px dashed var(--border);
+  border-radius: var(--radius); padding: 40px 20px; text-align: center;
+  margin-bottom: 16px; cursor: pointer; transition: border-color 0.2s;
 }
 .upload-zone:active { border-color: var(--primary); }
 .upload-zone .icon { font-size: 48px; margin-bottom: 12px; }
 .upload-zone p { color: var(--text-light); font-size: 14px; }
-
 .category-selector {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  display: flex; gap: 8px; margin-bottom: 16px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
 }
 .category-chip {
-  flex-shrink: 0;
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--card);
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
+  flex-shrink: 0; padding: 8px 16px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--card);
+  font-size: 14px; cursor: pointer; transition: all 0.2s;
 }
-.category-chip.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-/* Preview Grid */
+.category-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
 .preview-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  margin-bottom: 16px;
-  border-radius: var(--radius);
-  overflow: hidden;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+  margin-bottom: 16px; border-radius: var(--radius); overflow: hidden;
 }
-.preview-item {
-  position: relative;
-  aspect-ratio: 1;
-  overflow: hidden;
-}
-.preview-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.preview-item { position: relative; aspect-ratio: 1; overflow: hidden; }
+.preview-item img { width: 100%; height: 100%; object-fit: cover; }
 .preview-item .remove {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 24px;
-  height: 24px;
-  background: rgba(0,0,0,0.5);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute; top: 4px; right: 4px; width: 24px; height: 24px;
+  background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%;
+  font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 .preview-item .status {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 4px;
-  text-align: center;
-  font-size: 11px;
-  color: white;
-  font-weight: 600;
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 4px;
+  text-align: center; font-size: 11px; color: white; font-weight: 600;
 }
 .preview-item .status.uploading { background: rgba(102,126,234,0.8); }
 .preview-item .status.done { background: rgba(72,187,120,0.8); }
 .preview-item .status.error { background: rgba(252,129,129,0.8); }
-
-/* Progress */
-.progress-bar {
-  height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  margin-bottom: 16px;
-  overflow: hidden;
-  display: none;
-}
+.progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 16px; overflow: hidden; display: none; }
 .progress-bar.active { display: block; }
-.progress-fill {
-  height: 100%;
-  background: var(--primary);
-  border-radius: 2px;
-  transition: width 0.3s;
-  width: 0%;
-}
-
-/* Blog Generator */
-.uploaded-list {
-  background: var(--card);
-  border-radius: var(--radius);
-  overflow: hidden;
-  margin-bottom: 16px;
-}
+.progress-fill { height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.3s; width: 0%; }
+.uploaded-list { background: var(--card); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; }
 .uploaded-item {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  border-bottom: 1px solid var(--border);
-  gap: 12px;
+  display: flex; align-items: center; padding: 12px;
+  border-bottom: 1px solid var(--border); gap: 12px;
 }
 .uploaded-item:last-child { border-bottom: none; }
 .uploaded-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
 .uploaded-item .info { flex: 1; min-width: 0; }
 .uploaded-item .info .name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .uploaded-item .info .url { font-size: 11px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.uploaded-item .check { width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.uploaded-item .check.checked { background: var(--primary); border-color: var(--primary); color: white; font-size: 14px; }
-
-.blog-form { background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
-
-.output-area {
-  background: #1a202c;
-  color: #68d391;
-  border-radius: var(--radius);
-  padding: 16px;
-  font-family: "SF Mono", monospace;
-  font-size: 13px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-break: break-all;
-  max-height: 300px;
-  overflow-y: auto;
-  margin-bottom: 16px;
-  -webkit-overflow-scrolling: touch;
+.uploaded-item .check {
+  width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-
-/* Toast */
+.uploaded-item .check.checked { background: var(--primary); border-color: var(--primary); color: white; font-size: 14px; }
+.blog-form { background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+.output-area {
+  background: #1a202c; color: #68d391; border-radius: var(--radius); padding: 16px;
+  font-family: "SF Mono", monospace; font-size: 13px; line-height: 1.6;
+  white-space: pre-wrap; word-break: break-all;
+  max-height: 250px; overflow-y: auto; margin-bottom: 12px; -webkit-overflow-scrolling: touch;
+}
 .toast {
-  position: fixed;
-  top: calc(60px + var(--safe-top));
-  left: 50%;
+  position: fixed; top: calc(60px + var(--safe-top)); left: 50%;
   transform: translateX(-50%) translateY(-20px);
-  background: rgba(0,0,0,0.8);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-size: 14px;
-  z-index: 200;
-  opacity: 0;
-  transition: all 0.3s;
-  pointer-events: none;
+  background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
+  border-radius: 10px; font-size: 14px; z-index: 200;
+  opacity: 0; transition: all 0.3s; pointer-events: none; max-width: 90%; text-align: center;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* Empty State */
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
 .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-
-/* Status Badge */
 .status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
+  display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px;
+  border-radius: 20px; font-size: 12px; font-weight: 500;
 }
 .status-badge.connected { background: #c6f6d5; color: #276749; }
 .status-badge.disconnected { background: #fed7d7; color: #9b2c2c; }
+.publish-status {
+  background: var(--card); border-radius: var(--radius); padding: 24px;
+  text-align: center; margin-top: 16px;
+}
+.publish-status .spinner {
+  display: inline-block; width: 40px; height: 40px;
+  border: 4px solid var(--border); border-top-color: var(--primary);
+  border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-group { display: flex; gap: 8px; margin-top: 12px; }
+.btn-group .btn { flex: 1; }
 </style>
 </head>
 <body>
@@ -317,26 +181,29 @@ body {
   <div style="display:flex;align-items:center;justify-content:space-between;">
     <div>
       <h1>📷 博客相册</h1>
-      <div class="subtitle">上传照片 · 生成文章</div>
+      <div class="subtitle">上传照片 · 发布文章 · 全在手机上</div>
     </div>
     <span id="statusBadge" class="status-badge disconnected">未配置</span>
   </div>
 </div>
 
-<!-- Setup Page -->
 <div id="pageSetup" class="page">
   <div class="setup-card">
     <h3>🔧 GitHub 配置</h3>
     <p style="font-size:13px;color:var(--text-light);margin-bottom:16px;">
-      首次使用需要配置 GitHub Token，配置会保存在本地。
+      首次使用需要配置 GitHub Token，配置保存在手机本地。
     </p>
     <div class="input-group">
       <label>GitHub Token</label>
       <input type="password" id="inputToken" placeholder="ghp_xxxxxxxxxxxx">
     </div>
     <div class="input-group">
-      <label>仓库（默认已填好）</label>
+      <label>图床仓库</label>
       <input type="text" id="inputRepo" value="israel-Liu/blog-images">
+    </div>
+    <div class="input-group">
+      <label>博客源码仓库</label>
+      <input type="text" id="inputBlogRepo" value="israel-Liu/theForger">
     </div>
     <div class="input-group">
       <label>CDN 域名前缀</label>
@@ -346,7 +213,6 @@ body {
   </div>
 </div>
 
-<!-- Upload Page -->
 <div id="pageUpload" class="page">
   <div class="category-selector" id="categorySelector">
     <div class="category-chip active" data-cat="life">🏠 生活</div>
@@ -355,45 +221,33 @@ body {
     <div class="category-chip" data-cat="daily">📱 日常</div>
     <div class="category-chip" data-cat="tech">💻 技术</div>
   </div>
-
-  <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+  <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
     <div class="icon">📸</div>
     <p>点击选择照片</p>
-    <p style="font-size:12px;margin-top:4px;">支持多选，JPG / PNG / GIF / WebP</p>
+    <p style="font-size:12px;margin-top:4px;">支持多选</p>
   </div>
   <input type="file" id="fileInput" accept="image/*" multiple hidden>
-
-  <div class="progress-bar" id="progressBar">
-    <div class="progress-fill" id="progressFill"></div>
-  </div>
-
+  <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
   <div class="preview-grid" id="previewGrid"></div>
-
   <div id="uploadActions" style="display:none;">
-    <button class="btn btn-primary" id="btnUpload" onclick="uploadAll()">
-      ⬆️ 上传全部
-    </button>
+    <button class="btn btn-primary" id="btnUpload" onclick="uploadAll()">⬆️ 上传全部</button>
     <div style="height:8px;"></div>
     <button class="btn btn-secondary" onclick="clearAll()">🗑️ 清空</button>
   </div>
-
   <div id="uploadResult" style="display:none;margin-top:16px;">
     <div class="setup-card" style="text-align:center;">
       <div style="font-size:48px;margin-bottom:8px;">✅</div>
       <h3 id="resultText">上传完成！</h3>
-      <p style="color:var(--text-light);font-size:13px;margin-top:8px;">
-        图片已上传到 GitHub，可在「写文章」页面中使用
-      </p>
+      <p style="color:var(--text-light);font-size:13px;margin-top:8px;">可在「写文章」中使用这些图片</p>
       <div style="height:16px;"></div>
       <button class="btn btn-primary" onclick="switchTab('blog')">✍️ 去写文章</button>
     </div>
   </div>
 </div>
 
-<!-- Blog Generator Page -->
 <div id="pageBlog" class="page">
   <div class="blog-form">
-    <h3 style="margin-bottom:16px;">✍️ 生成博客文章</h3>
+    <h3 style="margin-bottom:16px;">✍️ 写文章</h3>
     <div class="input-group">
       <label>文章标题</label>
       <input type="text" id="blogTitle" placeholder="例如：周末郊游">
@@ -410,36 +264,36 @@ body {
       <label>简介</label>
       <input type="text" id="blogDesc" placeholder="一句话描述">
     </div>
+    <div class="input-group">
+      <label>正文（可选，支持 Markdown）</label>
+      <textarea id="blogBody" rows="4" placeholder="写点什么..."></textarea>
+    </div>
   </div>
 
   <h3 style="margin:16px 0 8px;font-size:15px;">选择图片（点击勾选）</h3>
   <div class="uploaded-list" id="uploadedList">
-    <div class="empty-state">
-      <div class="icon">📭</div>
-      <p>还没有上传过图片</p>
-      <p style="font-size:12px;margin-top:4px;">去「上传」页面添加照片吧</p>
+    <div class="empty-state"><div class="icon">📭</div><p>还没有上传过图片</p></div>
+  </div>
+
+  <button class="btn btn-primary" id="btnPublish" onclick="publishPost()" style="margin-bottom:12px;">
+    🚀 发布到博客
+  </button>
+
+  <div id="previewSection" style="display:none;">
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">预览生成的 Markdown：</p>
+    <div class="output-area" id="markdownOutput"></div>
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="copyMarkdown()">📋 复制</button>
     </div>
   </div>
 
-  <button class="btn btn-primary" onclick="generatePost()" style="margin-bottom:12px;">📝 生成 Markdown</button>
-
-  <div id="outputSection" style="display:none;">
-    <div class="output-area" id="markdownOutput"></div>
-    <button class="btn btn-success" onclick="copyMarkdown()">📋 复制到剪贴板</button>
-  </div>
+  <div id="publishStatus" style="display:none;"></div>
 </div>
 
-<!-- Tab Bar -->
 <div class="tab-bar">
-  <button class="tab-item" onclick="switchTab('upload')">
-    <span class="icon">📤</span>上传
-  </button>
-  <button class="tab-item" onclick="switchTab('blog')">
-    <span class="icon">✍️</span>写文章
-  </button>
-  <button class="tab-item" onclick="switchTab('setup')">
-    <span class="icon">⚙️</span>设置
-  </button>
+  <button class="tab-item" onclick="switchTab('upload')"><span class="icon">📤</span>上传</button>
+  <button class="tab-item" onclick="switchTab('blog')"><span class="icon">✍️</span>写文章</button>
+  <button class="tab-item" onclick="switchTab('setup')"><span class="icon">⚙️</span>设置</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -454,19 +308,17 @@ let currentCategory = 'life';
 function init() {
   config = JSON.parse(localStorage.getItem('blogUploader') || '{}');
   uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-
   if (config.token) {
     document.getElementById('inputToken').value = config.token;
-    document.getElementById('inputRepo').value = config.repo || 'israel-Liu/blog-images';
-    document.getElementById('inputCdn').value = config.cdn || 'https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main';
+    document.getElementById('inputRepo').value = config.repo || '';
+    document.getElementById('inputBlogRepo').value = config.blogRepo || 'israel-Liu/theForger';
+    document.getElementById('inputCdn').value = config.cdn || '';
     updateStatus(true);
     switchTab('upload');
   } else {
     switchTab('setup');
   }
-
   document.getElementById('fileInput').addEventListener('change', handleFileSelect);
-
   document.querySelectorAll('.category-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
@@ -474,98 +326,63 @@ function init() {
       currentCategory = chip.dataset.cat;
     });
   });
-
   renderUploadedList();
 }
 
 function saveConfig() {
   const token = document.getElementById('inputToken').value.trim();
   const repo = document.getElementById('inputRepo').value.trim();
+  const blogRepo = document.getElementById('inputBlogRepo').value.trim();
   const cdn = document.getElementById('inputCdn').value.trim();
-
   if (!token) { showToast('请输入 GitHub Token'); return; }
-
-  config = { token, repo, cdn };
+  config = { token, repo, blogRepo, cdn };
   localStorage.setItem('blogUploader', JSON.stringify(config));
   updateStatus(true);
   showToast('✅ 配置已保存');
   switchTab('upload');
 }
 
-function updateStatus(connected) {
-  const badge = document.getElementById('statusBadge');
-  if (connected) {
-    badge.className = 'status-badge connected';
-    badge.textContent = '✓ 已连接';
-  } else {
-    badge.className = 'status-badge disconnected';
-    badge.textContent = '未配置';
-  }
+function updateStatus(ok) {
+  const b = document.getElementById('statusBadge');
+  b.className = 'status-badge ' + (ok ? 'connected' : 'disconnected');
+  b.textContent = ok ? '✓ 已连接' : '未配置';
 }
 
 function switchTab(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-
-  const pageMap = { upload: 'pageUpload', blog: 'pageBlog', setup: 'pageSetup' };
-  document.getElementById(pageMap[name]).classList.add('active');
-
-  const tabs = document.querySelectorAll('.tab-item');
-  const tabIndex = { upload: 0, blog: 1, setup: 2 };
-  tabs[tabIndex[name]].classList.add('active');
-
+  const map = { upload: 'pageUpload', blog: 'pageBlog', setup: 'pageSetup' };
+  document.getElementById(map[name]).classList.add('active');
+  document.querySelectorAll('.tab-item')[ {upload:0,blog:1,setup:2}[name] ].classList.add('active');
   if (name === 'blog') renderUploadedList();
 }
 
 function handleFileSelect(e) {
-  const files = Array.from(e.target.files);
-  if (!files.length) return;
-
-  files.forEach(file => {
+  Array.from(e.target.files).forEach(file => {
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      selectedFiles.push({
-        file,
-        name: file.name,
-        dataUrl: ev.target.result,
-        status: 'pending'
-      });
+    reader.onload = ev => {
+      selectedFiles.push({ file, name: file.name, dataUrl: ev.target.result, status: 'pending' });
       renderPreview();
     };
     reader.readAsDataURL(file);
   });
-
   e.target.value = '';
 }
 
 function renderPreview() {
   const grid = document.getElementById('previewGrid');
   const actions = document.getElementById('uploadActions');
-  const result = document.getElementById('uploadResult');
-
-  if (!selectedFiles.length) {
-    grid.innerHTML = '';
-    actions.style.display = 'none';
-    return;
-  }
-
-  result.style.display = 'none';
+  if (!selectedFiles.length) { grid.innerHTML = ''; actions.style.display = 'none'; return; }
+  document.getElementById('uploadResult').style.display = 'none';
   actions.style.display = 'block';
-
   grid.innerHTML = selectedFiles.map((f, i) => `
     <div class="preview-item">
-      <img src="${f.dataUrl}" alt="${f.name}">
-      ${f.status === 'pending' ? `<button class="remove" onclick="removeFile(${i})">✕</button>` : ''}
+      <img src="${f.dataUrl}">
+      ${f.status === 'pending' ? `<button class="remove" onclick="selectedFiles.splice(${i},1);renderPreview()">✕</button>` : ''}
       ${f.status === 'uploading' ? '<div class="status uploading">上传中...</div>' : ''}
-      ${f.status === 'done' ? '<div class="status done">✓ 已上传</div>' : ''}
-      ${f.status === 'error' ? '<div class="status error">✕ 失败</div>' : ''}
-    </div>
-  `).join('');
-}
-
-function removeFile(index) {
-  selectedFiles.splice(index, 1);
-  renderPreview();
+      ${f.status === 'done' ? '<div class="status done">✓</div>' : ''}
+      ${f.status === 'error' ? '<div class="status error">✕</div>' : ''}
+    </div>`).join('');
 }
 
 function clearAll() {
@@ -575,208 +392,190 @@ function clearAll() {
 }
 
 async function uploadAll() {
-  if (!config.token) { showToast('请先配置 GitHub Token'); switchTab('setup'); return; }
+  if (!config.token) { showToast('请先配置'); switchTab('setup'); return; }
   if (!selectedFiles.length) { showToast('请先选择照片'); return; }
-
   const btn = document.getElementById('btnUpload');
-  btn.disabled = true;
-  btn.textContent = '⏳ 上传中...';
-
+  btn.disabled = true; btn.textContent = '⏳ 上传中...';
   const bar = document.getElementById('progressBar');
   const fill = document.getElementById('progressFill');
   bar.classList.add('active');
-
-  let done = 0;
-  let success = 0;
-  const total = selectedFiles.length;
-
-  for (let i = 0; i < selectedFiles.length; i++) {
-    const f = selectedFiles[i];
-    f.status = 'uploading';
-    renderPreview();
-
+  let done = 0, success = 0, total = selectedFiles.length;
+  for (const f of selectedFiles) {
+    f.status = 'uploading'; renderPreview();
     try {
-      const url = await uploadToGithub(f.file, f.name);
-      f.status = 'done';
-      success++;
-
+      const result = await uploadToGithub(f.file, f.name);
+      f.status = 'done'; success++;
       uploadedImages.unshift({
-        name: f.name,
-        url: url,
-        cdnUrl: `${config.cdn}/${currentCategory}/${f.name}`,
+        name: result.safeName,
+        cdnUrl: `${config.cdn}/${currentCategory}/${result.safeName}`,
         category: currentCategory,
         date: new Date().toISOString()
       });
-    } catch (err) {
-      f.status = 'error';
-      console.error('Upload failed:', f.name, err);
-    }
-
+    } catch (err) { f.status = 'error'; console.error(err); }
     done++;
-    fill.style.width = (done / total * 100) + '%';
+    fill.style.width = (done/total*100)+'%';
     renderPreview();
   }
-
   localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
-
-  btn.disabled = false;
-  btn.textContent = '⬆️ 上传全部';
+  btn.disabled = false; btn.textContent = '⬆️ 上传全部';
   bar.classList.remove('active');
-
-  const resultEl = document.getElementById('uploadResult');
   document.getElementById('resultText').textContent = `上传完成！${success}/${total} 张成功`;
-  resultEl.style.display = 'block';
-
-  if (success > 0) {
-    showToast(`✅ ${success} 张照片已上传`);
-  }
-
+  document.getElementById('uploadResult').style.display = 'block';
+  if (success > 0) showToast(`✅ ${success} 张照片已上传`);
   selectedFiles = selectedFiles.filter(f => f.status !== 'done');
   if (selectedFiles.length) renderPreview();
 }
 
 async function uploadToGithub(file, filename) {
-  const timestamp = Date.now();
   const ext = filename.split('.').pop();
-  const safeName = `${timestamp}_${Math.random().toString(36).slice(2, 6)}.${ext}`;
+  const safeName = `${Date.now()}_${Math.random().toString(36).slice(2,6)}.${ext}`;
   const path = `${currentCategory}/${safeName}`;
-
   const base64 = await fileToBase64(file);
-
   const res = await fetch(`${GITHUB_API}/repos/${config.repo}/contents/${path}`, {
     method: 'PUT',
-    headers: {
-      'Authorization': `token ${config.token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      message: `upload: ${safeName}`,
-      content: base64,
-      branch: 'main'
-    })
+    headers: { 'Authorization': `token ${config.token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: `upload: ${safeName}`, content: base64, branch: 'main' })
   });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message || 'Upload failed');
-  }
-
-  const data = await res.json();
-  return data.content.download_url;
+  if (!res.ok) throw new Error((await res.json()).message);
+  return { safeName };
 }
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result.split(',')[1];
-      resolve(base64);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(',')[1]);
+    r.onerror = reject;
+    r.readAsDataURL(file);
   });
 }
 
 function renderUploadedList() {
   const list = document.getElementById('uploadedList');
-
   if (!uploadedImages.length) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="icon">📭</div>
-        <p>还没有上传过图片</p>
-        <p style="font-size:12px;margin-top:4px;">去「上传」页面添加照片吧</p>
-      </div>`;
+    list.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>还没有上传过图片</p><p style="font-size:12px;margin-top:4px;">去「上传」页面添加照片</p></div>';
     return;
   }
-
   list.innerHTML = uploadedImages.map((img, i) => `
     <div class="uploaded-item" onclick="toggleCheck(${i})">
-      <img src="${img.cdnUrl}" alt="${img.name}" loading="lazy">
+      <img src="${img.cdnUrl}" loading="lazy">
       <div class="info">
         <div class="name">${img.name}</div>
         <div class="url">${img.category} · ${new Date(img.date).toLocaleDateString('zh-CN')}</div>
       </div>
-      <div class="check ${img.selected ? 'checked' : ''}" id="check-${i}">
-        ${img.selected ? '✓' : ''}
-      </div>
-    </div>
-  `).join('');
+      <div class="check ${img.selected?'checked':''}">${img.selected?'✓':''}</div>
+    </div>`).join('');
 }
 
-function toggleCheck(index) {
-  uploadedImages[index].selected = !uploadedImages[index].selected;
+function toggleCheck(i) {
+  uploadedImages[i].selected = !uploadedImages[i].selected;
   renderUploadedList();
 }
 
-function generatePost() {
+function buildMarkdown() {
   const title = document.getElementById('blogTitle').value.trim();
   const tags = document.getElementById('blogTags').value.trim();
   const category = document.getElementById('blogCategory').value.trim();
   const desc = document.getElementById('blogDesc').value.trim();
-
-  if (!title) { showToast('请输入文章标题'); return; }
-
+  const body = document.getElementById('blogBody').value.trim();
   const selected = uploadedImages.filter(img => img.selected);
-  if (!selected.length) { showToast('请选择至少一张图片'); return; }
+
+  if (!title) { showToast('请输入文章标题'); return null; }
+  if (!selected.length) { showToast('请选择至少一张图片'); return null; }
 
   const now = new Date();
-  const dateStr = now.getFullYear() + '-' +
-    String(now.getMonth()+1).padStart(2,'0') + '-' +
-    String(now.getDate()).padStart(2,'0') + ' ' +
-    String(now.getHours()).padStart(2,'0') + ':' +
-    String(now.getMinutes()).padStart(2,'0') + ':' +
-    String(now.getSeconds()).padStart(2,'0');
-
+  const pad = n => String(n).padStart(2, '0');
+  const dateStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
   const tagList = tags ? tags.split(/[,，]/).map(t => `  - ${t.trim()}`).join('\n') : '  - 生活';
 
-  let md = `---
-title: ${title}
-date: ${dateStr}
-tags:
-${tagList}
-categories: ${category || '生活'}
-cover: ${selected[0].cdnUrl}
-description: ${desc || title}
----
+  let md = `---\ntitle: ${title}\ndate: ${dateStr}\ntags:\n${tagList}\ncategories: ${category||'生活'}\ncover: ${selected[0].cdnUrl}\ndescription: ${desc||title}\n---\n\n`;
+  if (body) md += body + '\n\n';
+  selected.forEach((img, i) => { md += `![${title}-${i+1}](${img.cdnUrl})\n\n`; });
 
-${desc || ''}
+  return { title, md, dateStr };
+}
 
-`;
+async function publishPost() {
+  const result = buildMarkdown();
+  if (!result) return;
 
-  selected.forEach((img, i) => {
-    md += `![${title}-${i+1}](${img.cdnUrl})\n\n`;
-  });
+  document.getElementById('markdownOutput').textContent = result.md;
+  document.getElementById('previewSection').style.display = 'block';
 
-  document.getElementById('markdownOutput').textContent = md;
-  document.getElementById('outputSection').style.display = 'block';
+  const statusEl = document.getElementById('publishStatus');
+  const btn = document.getElementById('btnPublish');
+  btn.disabled = true; btn.textContent = '🚀 发布中...';
+
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = '<div class="publish-status"><div class="spinner"></div><p>正在发布文章到博客...</p><p style="font-size:12px;color:var(--text-light);margin-top:4px;">通过 GitHub API 创建文章，自动触发构建部署</p></div>';
+
+  try {
+    const filename = result.title.replace(/[\/\\:*?"<>|]/g, '-');
+    const path = `source/_posts/${filename}.md`;
+    const content = btoa(unescape(encodeURIComponent(result.md)));
+
+    const res = await fetch(`${GITHUB_API}/repos/${config.blogRepo}/contents/${path}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${config.token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `post: ${result.title}`,
+        content: content,
+        branch: 'master'
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message);
+    }
+
+    statusEl.innerHTML = `
+      <div class="publish-status">
+        <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+        <h3>发布成功！</h3>
+        <p style="color:var(--text-light);font-size:13px;margin-top:8px;">
+          文章已提交到 GitHub，自动构建部署中...<br>
+          约 1-2 分钟后可在网站上看到
+        </p>
+        <div style="height:16px;"></div>
+        <a href="https://israel-liu.github.io/" target="_blank" class="btn btn-success" style="text-decoration:none;">
+          🌐 打开博客查看
+        </a>
+      </div>`;
+
+    showToast('🎉 文章发布成功！');
+
+    uploadedImages.forEach(img => img.selected = false);
+    localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
+
+  } catch (err) {
+    statusEl.innerHTML = `
+      <div class="publish-status">
+        <div style="font-size:48px;margin-bottom:12px;">❌</div>
+        <h3>发布失败</h3>
+        <p style="color:var(--danger);font-size:13px;margin-top:8px;">${err.message}</p>
+        <div style="height:16px;"></div>
+        <button class="btn btn-warning" onclick="publishPost()">🔄 重试</button>
+      </div>`;
+    showToast('❌ 发布失败: ' + err.message);
+  }
+
+  btn.disabled = false; btn.textContent = '🚀 发布到博客';
 }
 
 async function copyMarkdown() {
   const text = document.getElementById('markdownOutput').textContent;
-  try {
-    await navigator.clipboard.writeText(text);
-    showToast('✅ 已复制到剪贴板');
-  } catch {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('✅ 已复制到剪贴板');
-  }
+  try { await navigator.clipboard.writeText(text); }
+  catch { const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t); }
+  showToast('✅ 已复制');
 }
 
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
 init();
 </script>
-
 </body>
 </html>

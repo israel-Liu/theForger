@@ -1,24 +1,34 @@
-# 云效 Flow 流水线 - 构建 Hexo 并部署到 GitHub Pages
-# 在云效中关联此仓库后，需要配置以下环境变量：
-#   GITHUB_TOKEN: GitHub Personal Access Token (用于推送到 GitHub Pages 仓库)
+# ============================================================
+# 云效 Flow 流水线 — 构建 Hexo 博客并部署到 Netlify
+# ============================================================
 #
-# 配置步骤：
-# 1. 打开 https://flow.aliyun.com
-# 2. 新建流水线 → 关联 Codeup 仓库 blog/zybb
-# 3. 选择 Node.js 构建模板
-# 4. 在流水线变量中添加 GITHUB_TOKEN
-# 5. 按下面的步骤配置构建和部署命令
-
-# 触发条件: push 到 master 分支且修改了文章/配置
-# 构建命令:
-#   npm ci
-#   npx hexo clean && npx hexo generate
+# 使用说明：
+# 1. 打开 https://flow.aliyun.com → 新建流水线
+# 2. 关联 Codeup 仓库: blog/zybb，触发分支: master
+# 3. 添加「Node.js 构建」步骤，Node 版本选 20
+# 4. 在流水线「变量与缓存」中添加以下变量：
+#      NETLIFY_AUTH_TOKEN = nfp_32XDMxt8cnZ4SwHtSH4SMUPuaTnMy22xf2ff
+#      NETLIFY_SITE_ID    = voluble-centaur-6e797b
+#      CODEUP_TOKEN       = pt-7Z2rIIJi2ecdLfd0pgPxSywH_b5e5ee1b-6db9-4ab4-9ea4-6c6fc36b3666
+# 5. 将下方「构建命令」粘贴到构建步骤中
 #
-# 部署命令 (在构建步骤之后):
-#   cd public
-#   git init
-#   git config user.name "Codeup Deploy"
-#   git config user.email "deploy@codeup"
-#   git add -A
-#   git commit -m "deploy from Codeup Flow"
-#   git push -f https://${GITHUB_TOKEN}@github.com/israel-Liu/israel-Liu.github.io.git master
+# ============================================================
+# 构建命令（复制粘贴到云效 Flow 的「Node.js 构建」步骤中）：
+# ============================================================
+#
+# # 安装博客依赖
+# npm ci
+#
+# # 构建 Hexo 静态文件
+# npx hexo clean && npx hexo generate
+#
+# # 从 Codeup 克隆图片仓库并复制到 public/images/
+# git clone --depth 1 https://${CODEUP_TOKEN}@codeup.aliyun.com/69c25a5b43d4694d6a528ca9/blog/images.git _blog_images || \
+# git clone --depth 1 https://${CODEUP_TOKEN}@codeup.aliyun.com/69c25a5b43d4694d6a528ca9/blog/blog-images.git _blog_images
+# mkdir -p public/images
+# cp -r _blog_images/life _blog_images/daily _blog_images/food _blog_images/travel _blog_images/tech public/images/ 2>/dev/null || true
+# rm -rf _blog_images
+#
+# # 安装 Netlify CLI 并部署
+# npm install -g netlify-cli
+# netlify deploy --prod --dir=public --site=${NETLIFY_SITE_ID} --auth=${NETLIFY_AUTH_TOKEN} --message="deploy from Codeup Flow"

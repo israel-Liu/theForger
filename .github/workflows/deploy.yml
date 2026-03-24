@@ -31,6 +31,15 @@ jobs:
       - name: Generate static files
         run: npx hexo clean && npx hexo generate
 
+      - name: Clone blog-images and copy to public
+        run: |
+          git clone --depth 1 https://github.com/israel-Liu/blog-images.git _blog_images
+          mkdir -p public/images
+          cp -r _blog_images/life _blog_images/daily _blog_images/food _blog_images/travel _blog_images/tech public/images/ 2>/dev/null || true
+          rm -rf _blog_images
+        env:
+          GIT_TERMINAL_PROMPT: 0
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:

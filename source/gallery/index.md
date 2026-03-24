@@ -2,6 +2,7 @@
 title: 相册
 date: 2026-03-24 14:00:00
 type: "gallery"
+top_img: https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/1774357932875_kf1a.jpg
 ---
 
 <div class="gallery-group-main">

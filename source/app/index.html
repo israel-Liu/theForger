@@ -124,20 +124,48 @@ body {
 .progress-bar.active { display: block; }
 .progress-fill { height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.3s; width: 0%; }
 .uploaded-list { background: var(--card); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; }
-.uploaded-item {
-  display: flex; align-items: center; padding: 12px;
-  border-bottom: 1px solid var(--border); gap: 12px;
+.img-group-header {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  background: var(--bg); cursor: pointer; user-select: none;
+  font-size: 13px; font-weight: 600; color: var(--text-light);
+  border-bottom: 1px solid var(--border);
 }
-.uploaded-item:last-child { border-bottom: none; }
-.uploaded-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
-.uploaded-item .info { flex: 1; min-width: 0; }
-.uploaded-item .info .name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.uploaded-item .info .url { font-size: 11px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.uploaded-item .check {
-  width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 50%;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+.img-group-header:active { background: var(--border); }
+.img-group-header .ig-arrow { transition: transform 0.2s; font-size: 12px; }
+.img-group-header.collapsed .ig-arrow { transform: rotate(-90deg); }
+.img-group-header .ig-badge {
+  margin-left: auto; font-size: 11px; font-weight: 400;
 }
-.uploaded-item .check.checked { background: var(--primary); border-color: var(--primary); color: white; font-size: 14px; }
+.img-group-header .ig-sel { color: var(--primary); font-weight: 500; }
+.img-group-body { padding: 8px; }
+.img-group-body.collapsed { display: none; }
+.img-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+}
+.img-thumb {
+  position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden;
+  cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s;
+}
+.img-thumb.selected { border-color: var(--primary); }
+.img-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-thumb .it-check {
+  position: absolute; top: 4px; right: 4px; width: 20px; height: 20px;
+  border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);
+  background: rgba(0,0,0,0.3); display: flex; align-items: center;
+  justify-content: center; font-size: 11px; color: white;
+}
+.img-thumb.selected .it-check {
+  background: var(--primary); border-color: var(--primary);
+}
+.img-group-actions {
+  display: flex; gap: 8px; padding: 6px 0 2px; justify-content: flex-end;
+}
+.img-group-actions button {
+  font-size: 11px; padding: 3px 10px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--card); color: var(--text-light);
+  cursor: pointer;
+}
+.img-group-actions button:active { background: var(--bg); }
 .blog-form { background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
 .output-area {
   background: #1a202c; color: #68d391; border-radius: var(--radius); padding: 16px;
@@ -457,7 +485,10 @@ body {
     </div>
   </div>
 
-  <h3 style="margin:16px 0 8px;font-size:15px;">选择图片（点击勾选）</h3>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px;">
+    <h3 style="font-size:15px;">选择图片（点击勾选）</h3>
+    <span id="selectedCount" style="font-size:12px;color:var(--primary);font-weight:500;"></span>
+  </div>
   <div class="uploaded-list" id="uploadedList">
     <div class="empty-state"><div class="icon">📭</div><p>还没有上传过图片</p></div>
   </div>
@@ -733,23 +764,78 @@ function fileToBase64(file) {
 
 function renderUploadedList() {
   const list = document.getElementById('uploadedList');
+  const countEl = document.getElementById('selectedCount');
   if (!uploadedImages.length) {
     list.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>还没有上传过图片</p><p style="font-size:12px;margin-top:4px;">去「上传」页面添加照片</p></div>';
+    if (countEl) countEl.textContent = '';
     return;
   }
-  list.innerHTML = uploadedImages.map((img, i) => `
-    <div class="uploaded-item" onclick="toggleCheck(${i})">
-      <img src="${img.cdnUrl}" loading="lazy">
-      <div class="info">
-        <div class="name">${img.name}</div>
-        <div class="url">${img.category} · ${new Date(img.date).toLocaleDateString('zh-CN')}</div>
-      </div>
-      <div class="check ${img.selected?'checked':''}">${img.selected?'✓':''}</div>
-    </div>`).join('');
+
+  const selTotal = uploadedImages.filter(img => img.selected).length;
+  if (countEl) countEl.textContent = selTotal ? `已选 ${selTotal} 张` : '';
+
+  const groups = {};
+  uploadedImages.forEach((img, i) => {
+    const d = new Date(img.date);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push({ ...img, idx: i });
+  });
+
+  const sortedKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+  let html = '';
+  sortedKeys.forEach((key, gi) => {
+    const imgs = groups[key];
+    const selCount = imgs.filter(img => img.selected).length;
+    const d = new Date(key + 'T00:00:00');
+    const today = new Date();
+    const isToday = d.toDateString() === today.toDateString();
+    const yest = new Date(today); yest.setDate(yest.getDate()-1);
+    const isYest = d.toDateString() === yest.toDateString();
+    const label = isToday ? '今天' : isYest ? '昨天' : d.toLocaleDateString('zh-CN', {month:'long',day:'numeric'});
+    const collapsed = gi > 0 && !selCount;
+
+    html += `<div class="img-group-header${collapsed ? ' collapsed' : ''}" onclick="toggleImgGroup(this)">
+      <span class="ig-arrow">▼</span>
+      <span>📷 ${label}</span>
+      <span class="ig-badge">${imgs.length} 张${selCount ? ' · <span class=ig-sel>已选' + selCount + '</span>' : ''}</span>
+    </div>`;
+    html += `<div class="img-group-body${collapsed ? ' collapsed' : ''}">`;
+    html += `<div class="img-grid">`;
+    imgs.forEach(img => {
+      html += `<div class="img-thumb${img.selected ? ' selected' : ''}" onclick="toggleCheck(${img.idx})">
+        <img src="${img.cdnUrl}" loading="lazy">
+        <div class="it-check">${img.selected ? '✓' : ''}</div>
+      </div>`;
+    });
+    html += `</div>`;
+    html += `<div class="img-group-actions">
+      <button onclick="selectGroupAll('${key}',true)">全选</button>
+      <button onclick="selectGroupAll('${key}',false)">取消全选</button>
+    </div>`;
+    html += `</div>`;
+  });
+  list.innerHTML = html;
+}
+
+function toggleImgGroup(el) {
+  el.classList.toggle('collapsed');
+  el.nextElementSibling.classList.toggle('collapsed');
 }
 
 function toggleCheck(i) {
   uploadedImages[i].selected = !uploadedImages[i].selected;
+  localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
+  renderUploadedList();
+}
+
+function selectGroupAll(dateKey, sel) {
+  uploadedImages.forEach(img => {
+    const d = new Date(img.date);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (key === dateKey) img.selected = sel;
+  });
+  localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
   renderUploadedList();
 }
 

@@ -685,6 +685,7 @@ async function uploadAll() {
   const bar = document.getElementById('progressBar');
   const fill = document.getElementById('progressFill');
   bar.classList.add('active');
+  const batchId = Date.now().toString();
   let done = 0, success = 0, total = selectedFiles.length;
   for (const f of selectedFiles) {
     f.status = 'uploading'; renderPreview();
@@ -695,7 +696,8 @@ async function uploadAll() {
         name: result.safeName,
         cdnUrl: `${getPC().cdn}/${currentCategory}/${result.safeName}`,
         category: currentCategory,
-        date: new Date().toISOString()
+        date: new Date().toISOString(),
+        batch: batchId
       });
     } catch (err) { f.status = 'error'; console.error(err); showToast('❌ ' + (err.message || err)); }
     done++;
@@ -774,31 +776,38 @@ function renderUploadedList() {
   const selTotal = uploadedImages.filter(img => img.selected).length;
   if (countEl) countEl.textContent = selTotal ? `已选 ${selTotal} 张` : '';
 
-  const groups = {};
+  const batches = {};
+  let noBatchSeq = 0;
   uploadedImages.forEach((img, i) => {
-    const d = new Date(img.date);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    if (!groups[key]) groups[key] = [];
-    groups[key].push({ ...img, idx: i });
+    const key = img.batch || ('legacy_' + (noBatchSeq++));
+    if (!batches[key]) batches[key] = { imgs: [], firstDate: img.date };
+    batches[key].imgs.push({ ...img, idx: i });
   });
 
-  const sortedKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+  const sortedKeys = Object.keys(batches).sort((a, b) => {
+    return new Date(batches[b].firstDate) - new Date(batches[a].firstDate);
+  });
+
   let html = '';
   sortedKeys.forEach((key, gi) => {
-    const imgs = groups[key];
+    const group = batches[key];
+    const imgs = group.imgs;
     const selCount = imgs.filter(img => img.selected).length;
-    const d = new Date(key + 'T00:00:00');
+    const allSel = selCount === imgs.length;
+    const d = new Date(group.firstDate);
     const today = new Date();
     const isToday = d.toDateString() === today.toDateString();
-    const yest = new Date(today); yest.setDate(yest.getDate()-1);
+    const yest = new Date(today); yest.setDate(yest.getDate() - 1);
     const isYest = d.toDateString() === yest.toDateString();
-    const label = isToday ? '今天' : isYest ? '昨天' : d.toLocaleDateString('zh-CN', {month:'long',day:'numeric'});
+    const dayLabel = isToday ? '今天' : isYest ? '昨天' : d.toLocaleDateString('zh-CN', {month:'numeric', day:'numeric'});
+    const timeLabel = d.toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
+    const catLabel = imgs[0].category || '';
     const collapsed = gi > 0 && !selCount;
 
     html += `<div class="img-group-header${collapsed ? ' collapsed' : ''}" onclick="toggleImgGroup(this)">
       <span class="ig-arrow">▼</span>
-      <span>📷 ${label}</span>
-      <span class="ig-badge">${imgs.length} 张${selCount ? ' · <span class=ig-sel>已选' + selCount + '</span>' : ''}</span>
+      <span>📷 ${dayLabel} ${timeLabel}${catLabel ? ' · ' + catLabel : ''}</span>
+      <span class="ig-badge">${imgs.length} 张${selCount ? ' · <span class=ig-sel>✓' + selCount + '</span>' : ''}</span>
     </div>`;
     html += `<div class="img-group-body${collapsed ? ' collapsed' : ''}">`;
     html += `<div class="img-grid">`;
@@ -810,8 +819,7 @@ function renderUploadedList() {
     });
     html += `</div>`;
     html += `<div class="img-group-actions">
-      <button onclick="selectGroupAll('${key}',true)">全选</button>
-      <button onclick="selectGroupAll('${key}',false)">取消全选</button>
+      <button onclick="selectBatch('${key}',${allSel ? 'false' : 'true'})">${allSel ? '取消全选' : '✅ 一键全选这组'}</button>
     </div>`;
     html += `</div>`;
   });
@@ -829,11 +837,11 @@ function toggleCheck(i) {
   renderUploadedList();
 }
 
-function selectGroupAll(dateKey, sel) {
+function selectBatch(batchKey, sel) {
+  let noBatchSeq = 0;
   uploadedImages.forEach(img => {
-    const d = new Date(img.date);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    if (key === dateKey) img.selected = sel;
+    const key = img.batch || ('legacy_' + (noBatchSeq++));
+    if (key === batchKey) img.selected = sel;
   });
   localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
   renderUploadedList();

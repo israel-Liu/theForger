@@ -494,6 +494,14 @@ function buildMarkdown() {
   return { title, md, dateStr };
 }
 
+function utf8ToBase64(str) {
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
 async function publishPost() {
   const result = buildMarkdown();
   if (!result) return;
@@ -509,9 +517,11 @@ async function publishPost() {
   statusEl.innerHTML = '<div class="publish-status"><div class="spinner"></div><p>正在发布文章到博客...</p><p style="font-size:12px;color:var(--text-light);margin-top:4px;">通过 GitHub API 创建文章，自动触发构建部署</p></div>';
 
   try {
-    const filename = result.title.replace(/[\/\\:*?"<>|]/g, '-');
+    const timestamp = Date.now();
+    const safeTitle = result.title.replace(/[\/\\:*?"<>|\s]/g, '-').replace(/-+/g, '-');
+    const filename = `${safeTitle}-${timestamp}`;
     const path = `source/_posts/${filename}.md`;
-    const content = btoa(unescape(encodeURIComponent(result.md)));
+    const content = utf8ToBase64(result.md);
 
     const res = await fetch(`${GITHUB_API}/repos/${config.blogRepo}/contents/${path}`, {
       method: 'PUT',
@@ -524,8 +534,8 @@ async function publishPost() {
     });
 
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.message);
+      const errData = await res.json();
+      throw new Error(errData.message || `HTTP ${res.status}`);
     }
 
     statusEl.innerHTML = `

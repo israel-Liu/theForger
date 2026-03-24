@@ -125,18 +125,25 @@ body {
 .progress-fill { height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.3s; width: 0%; }
 .uploaded-list { background: var(--card); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; }
 .img-group-header {
-  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
-  background: var(--bg); cursor: pointer; user-select: none;
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+  background: var(--bg); user-select: none;
   font-size: 13px; font-weight: 600; color: var(--text-light);
   border-bottom: 1px solid var(--border);
 }
-.img-group-header:active { background: var(--border); }
+.img-group-header .ig-left { display: flex; align-items: center; gap: 8px; flex: 1; cursor: pointer; }
+.img-group-header .ig-left:active { opacity: 0.6; }
 .img-group-header .ig-arrow { transition: transform 0.2s; font-size: 12px; }
 .img-group-header.collapsed .ig-arrow { transform: rotate(-90deg); }
-.img-group-header .ig-badge {
-  margin-left: auto; font-size: 11px; font-weight: 400;
+.img-group-header .ig-info { font-size: 11px; font-weight: 400; }
+.img-group-header .ig-sel-btn {
+  padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 500;
+  border: 1px solid var(--primary); color: var(--primary); background: white;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
 }
-.img-group-header .ig-sel { color: var(--primary); font-weight: 500; }
+.img-group-header .ig-sel-btn:active { background: rgba(102,126,234,0.1); }
+.img-group-header .ig-sel-btn.active {
+  background: var(--primary); color: white; border-color: var(--primary);
+}
 .img-group-body { padding: 8px; }
 .img-group-body.collapsed { display: none; }
 .img-grid {
@@ -157,15 +164,6 @@ body {
 .img-thumb.selected .it-check {
   background: var(--primary); border-color: var(--primary);
 }
-.img-group-actions {
-  display: flex; gap: 8px; padding: 6px 0 2px; justify-content: flex-end;
-}
-.img-group-actions button {
-  font-size: 11px; padding: 3px 10px; border: 1px solid var(--border);
-  border-radius: 8px; background: var(--card); color: var(--text-light);
-  cursor: pointer;
-}
-.img-group-actions button:active { background: var(--bg); }
 .blog-form { background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
 .output-area {
   background: #1a202c; color: #68d391; border-radius: var(--radius); padding: 16px;
@@ -809,10 +807,13 @@ function renderUploadedList() {
     const catLabel = imgs[0].category || '';
     const collapsed = gi > 0 && !selCount;
 
-    html += `<div class="img-group-header${collapsed ? ' collapsed' : ''}" onclick="toggleImgGroup(this)">
-      <span class="ig-arrow">▼</span>
-      <span>📷 ${dayLabel} ${timeLabel}${catLabel ? ' · ' + catLabel : ''}</span>
-      <span class="ig-badge">${imgs.length} 张${selCount ? ' · <span class=ig-sel>✓' + selCount + '</span>' : ''}</span>
+    html += `<div class="img-group-header${collapsed ? ' collapsed' : ''}">
+      <div class="ig-left" onclick="toggleImgGroup(this.parentElement)">
+        <span class="ig-arrow">▼</span>
+        <span>📷 ${dayLabel} ${timeLabel}${catLabel ? ' · ' + catLabel : ''}</span>
+        <span class="ig-info">${imgs.length} 张</span>
+      </div>
+      <button class="ig-sel-btn${allSel ? ' active' : ''}" onclick="event.stopPropagation();selectBatch('${key}',${allSel ? 'false' : 'true'})">${allSel ? '✓ 已全选' : '全选'}</button>
     </div>`;
     html += `<div class="img-group-body${collapsed ? ' collapsed' : ''}">`;
     html += `<div class="img-grid">`;
@@ -823,17 +824,14 @@ function renderUploadedList() {
       </div>`;
     });
     html += `</div>`;
-    html += `<div class="img-group-actions">
-      <button onclick="selectBatch('${key}',${allSel ? 'false' : 'true'})">${allSel ? '取消全选' : '✅ 一键全选这组'}</button>
-    </div>`;
     html += `</div>`;
   });
   list.innerHTML = html;
 }
 
-function toggleImgGroup(el) {
-  el.classList.toggle('collapsed');
-  el.nextElementSibling.classList.toggle('collapsed');
+function toggleImgGroup(header) {
+  header.classList.toggle('collapsed');
+  header.nextElementSibling.classList.toggle('collapsed');
 }
 
 function toggleCheck(i) {
@@ -866,16 +864,22 @@ function buildMarkdown() {
   const selected = uploadedImages.filter(img => img.selected);
 
   if (!title) { showToast('请输入文章标题'); return null; }
-  if (!selected.length) { showToast('请选择至少一张图片'); return null; }
+  if (!selected.length && !body) { showToast('请选择图片或输入正文内容'); return null; }
 
   const now = new Date();
   const pad = n => String(n).padStart(2, '0');
   const dateStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
   const tagList = tags ? tags.split(/[,，]/).map(t => `  - ${t.trim()}`).join('\n') : '  - 生活';
+  const cover = selected.length ? selected[0].cdnUrl : '';
 
-  let md = `---\ntitle: ${title}\ndate: ${dateStr}\ntags:\n${tagList}\ncategories: ${category||'生活'}\ncover: ${selected[0].cdnUrl}\ndescription: ${desc||title}\n---\n\n`;
+  let md = `---\ntitle: ${title}\ndate: ${dateStr}\ntags:\n${tagList}\ncategories: ${category||'生活'}\n`;
+  if (cover) md += `cover: ${cover}\n`;
+  md += `description: ${desc||title}\n---\n\n`;
   if (body) md += body + '\n\n';
-  selected.forEach((img, i) => { md += `![${title}-${i+1}](${img.cdnUrl})\n\n`; });
+  if (selected.length) {
+    md += '<!-- gallery -->\n';
+    selected.forEach((img, i) => { md += `![${title}-${i+1}](${img.cdnUrl})\n\n`; });
+  }
 
   return { title, md, dateStr };
 }

@@ -312,7 +312,10 @@ body {
       <h1>📷 博客相册</h1>
       <div class="subtitle">上传照片 · 发布文章 · 全在手机上</div>
     </div>
-    <span id="statusBadge" class="status-badge disconnected">未配置</span>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="statusBadge" class="status-badge disconnected">未配置</span>
+      <a href="/" style="font-size:22px;text-decoration:none;color:var(--primary);" title="返回主页">🏠</a>
+    </div>
   </div>
 </div>
 
@@ -371,6 +374,23 @@ body {
       推荐：通义千问 qwen-plus（阿里云）、deepseek-chat（DeepSeek）
     </p>
     <button class="btn btn-primary" onclick="saveAiConfig()">💾 保存 AI 配置</button>
+  </div>
+
+  <div class="setup-card">
+    <h3 style="margin-bottom:12px;">🖼️ 博客外观</h3>
+    <p style="font-size:12px;color:var(--text-light);margin-bottom:16px;">设置博客主页和文章的默认背景图。粘贴图片 URL（支持已上传的图床链接）。</p>
+    <div class="input-group">
+      <label>主页背景图</label>
+      <input type="text" id="inputHomeBg" placeholder="https://cdn.jsdelivr.net/gh/...">
+    </div>
+    <div class="input-group">
+      <label>默认文章封面图</label>
+      <input type="text" id="inputDefaultCover" placeholder="留空则使用主题默认">
+    </div>
+    <p style="font-size:11px;color:var(--text-light);margin-top:-8px;margin-bottom:12px;">
+      提示：修改后需重新构建部署才能在博客上生效。保存后会自动更新 _config.butterfly.yml 中的对应字段。
+    </p>
+    <button class="btn btn-primary" onclick="saveBlogAppearance()">💾 保存外观配置</button>
   </div>
 </div>
 
@@ -458,6 +478,11 @@ body {
       <input type="text" id="blogDesc" placeholder="一句话描述">
     </div>
     <div class="input-group">
+      <label>封面图（可选）</label>
+      <input type="text" id="blogCover" placeholder="留空则自动使用第一张选中图片">
+      <p style="font-size:11px;color:var(--text-light);margin-top:4px;">粘贴图片 URL，或留空使用默认逻辑</p>
+    </div>
+    <div class="input-group">
       <label>正文（可选，支持 Markdown）</label>
       <textarea id="blogBody" rows="6" placeholder="写点什么..."></textarea>
       <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
@@ -525,12 +550,16 @@ body {
       <button class="insert-btn" onclick="loadArticles()" id="btnRefreshArticles">🔄 刷新</button>
     </div>
   </div>
+  <div id="articleFilters" style="margin-bottom:12px;">
+    <div class="category-selector" id="dateFilter" style="margin-bottom:8px;"></div>
+    <div class="category-selector" id="tagFilter"></div>
+  </div>
   <div class="search-box">
     <span class="s-icon">🔍</span>
-    <input type="text" id="articleSearch" placeholder="搜索文章标题..." oninput="filterArticles()">
+    <input type="text" id="articleSearch" placeholder="输入关键词进一步筛选..." oninput="filterArticles()">
     <button class="s-clear" id="searchClear" onclick="clearSearch()">✕</button>
   </div>
-  <div class="uploaded-list" id="articleList" style="max-height:calc(100vh - 250px);overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div class="uploaded-list" id="articleList" style="max-height:calc(100vh - 300px);overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="empty-state"><div class="icon">📝</div><p>点击刷新加载文章列表</p></div>
   </div>
 </div>
@@ -596,6 +625,10 @@ function init() {
   document.getElementById('inputAiEndpoint').value = ai.endpoint || 'https://ark.cn-beijing.volces.com/api/v3';
   document.getElementById('inputAiKey').value = ai.key || 'ca1ffb31-c4d4-4e85-9781-ecbf0e98c675';
   document.getElementById('inputAiModel').value = ai.model || 'doubao-1-5-pro-32k-250115';
+
+  const appearance = config.appearance || {};
+  document.getElementById('inputHomeBg').value = appearance.homeBg || '';
+  document.getElementById('inputDefaultCover').value = appearance.defaultCover || '';
 
   const host = window.location.hostname;
   const detectedPlatform = host.includes('github.io') ? 'github'
@@ -956,7 +989,9 @@ function buildMarkdown() {
   const pad = n => String(n).padStart(2, '0');
   const dateStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
   const tagList = tags ? tags.split(/[,，]/).map(t => `  - ${t.trim()}`).join('\n') : '  - 生活';
-  const cover = selected.length ? selected[0].cdnUrl : '';
+  const manualCover = document.getElementById('blogCover').value.trim();
+  const defaultCover = (config.appearance || {}).defaultCover || '';
+  const cover = manualCover || (selected.length ? selected[0].cdnUrl : '') || defaultCover;
 
   let md = `---\ntitle: ${title}\ndate: ${dateStr}\ntags:\n${tagList}\ncategories: ${category||'生活'}\n`;
   if (cover) md += `cover: ${cover}\n`;
@@ -1311,6 +1346,15 @@ function saveAiConfig() {
   showToast('✅ AI 配置已保存');
 }
 
+function saveBlogAppearance() {
+  config.appearance = {
+    homeBg: document.getElementById('inputHomeBg').value.trim(),
+    defaultCover: document.getElementById('inputDefaultCover').value.trim()
+  };
+  localStorage.setItem('blogUploader', JSON.stringify(config));
+  showToast('✅ 外观配置已保存（重新发布后生效）');
+}
+
 async function aiGenerate() {
   const aiDef = { endpoint: 'https://ark.cn-beijing.volces.com/api/v3', key: 'ca1ffb31-c4d4-4e85-9781-ecbf0e98c675', model: 'doubao-1-5-pro-32k-250115' };
   const ai = { ...aiDef, ...(config.ai || {}) };
@@ -1485,10 +1529,83 @@ async function loadArticles() {
     articlesLoaded = true;
     document.getElementById('articleSearch').value = '';
     document.getElementById('searchClear').style.display = 'none';
+    activeDate = null; activeTag = null;
+    buildFilters(items);
     renderArticleList(items);
   } catch (err) {
     listEl.innerHTML = `<div class="empty-state"><div class="icon">❌</div><p>加载失败</p><p style="font-size:12px;margin-top:4px;">${err.message}</p></div>`;
   }
+}
+
+let activeDate = null;
+let activeTag = null;
+
+function buildFilters(items) {
+  const dates = new Map();
+  const tags = new Map();
+  items.forEach(a => {
+    const d = a.timestamp ? new Date(a.timestamp) : null;
+    const key = d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}` : null;
+    const label = d ? `${d.getFullYear()}年${d.getMonth()+1}月` : null;
+    if (key) dates.set(key, { label, count: (dates.get(key)?.count || 0) + 1 });
+    const title = a.displayTitle.toLowerCase();
+    const guessedTags = [];
+    if (/宝宝|志云|baby/.test(title)) guessedTags.push('宝宝');
+    if (/旅|游|trip|travel/.test(title)) guessedTags.push('旅行');
+    if (/拍照|摄影|photo/.test(title)) guessedTags.push('拍照');
+    if (/c\+\+|chromium|windows|typescript|linux|api|code|hexo|git/.test(title)) guessedTags.push('技术');
+    if (/读书|reading|book/.test(title)) guessedTags.push('读书');
+    if (!guessedTags.length) guessedTags.push('其他');
+    a._tags = guessedTags;
+    guessedTags.forEach(t => tags.set(t, (tags.get(t) || 0) + 1));
+  });
+
+  const dateEl = document.getElementById('dateFilter');
+  let dhtml = '<div class="category-chip' + (!activeDate ? ' active' : '') + '" data-val="" onclick="pickDate(this)">全部</div>';
+  for (const [key, v] of [...dates.entries()].sort().reverse()) {
+    dhtml += `<div class="category-chip${activeDate===key?' active':''}" data-val="${key}" onclick="pickDate(this)">${v.label} (${v.count})</div>`;
+  }
+  dateEl.innerHTML = dhtml;
+
+  const tagEl = document.getElementById('tagFilter');
+  let thtml = '<div class="category-chip' + (!activeTag ? ' active' : '') + '" data-val="" onclick="pickTag(this)">全部</div>';
+  for (const [t, c] of [...tags.entries()].sort((a,b) => b[1] - a[1])) {
+    thtml += `<div class="category-chip${activeTag===t?' active':''}" data-val="${t}" onclick="pickTag(this)">${t} (${c})</div>`;
+  }
+  tagEl.innerHTML = thtml;
+}
+
+function pickDate(el) {
+  activeDate = el.dataset.val || null;
+  el.parentElement.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterArticles();
+}
+
+function pickTag(el) {
+  activeTag = el.dataset.val || null;
+  el.parentElement.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterArticles();
+}
+
+function getFilteredArticles() {
+  let list = allArticles;
+  if (activeDate) {
+    list = list.filter(a => {
+      if (!a.timestamp) return false;
+      const d = new Date(a.timestamp);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}` === activeDate;
+    });
+  }
+  if (activeTag) {
+    list = list.filter(a => a._tags && a._tags.includes(activeTag));
+  }
+  const q = document.getElementById('articleSearch').value.trim().toLowerCase();
+  if (q) {
+    list = list.filter(a => a.displayTitle.toLowerCase().includes(q) || a.name.toLowerCase().includes(q));
+  }
+  return list;
 }
 
 function renderArticleList(items, expandAll) {
@@ -1496,7 +1613,7 @@ function renderArticleList(items, expandAll) {
   document.getElementById('articleCount').textContent = items.length ? `共 ${items.length} 篇` : '';
 
   if (!items.length) {
-    listEl.innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>暂无文章</p></div>';
+    listEl.innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>暂无匹配文章</p></div>';
     return;
   }
 
@@ -1517,11 +1634,12 @@ function renderArticleList(items, expandAll) {
     html += list.map(a => {
       const d = a.timestamp ? new Date(a.timestamp) : null;
       const dateStr = d ? `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '';
+      const tagBadges = (a._tags||[]).map(t => `<span style="font-size:10px;background:rgba(102,126,234,0.1);color:var(--primary);padding:1px 6px;border-radius:8px;margin-left:4px;">${t}</span>`).join('');
       return `<div class="article-item" onclick="openArticle('${encodeURIComponent(a.path)}','${a.sha}')">
         <div class="a-icon">📄</div>
         <div class="a-info">
           <div class="a-title">${a.displayTitle}</div>
-          <div class="a-meta"><span class="a-date">${dateStr}</span></div>
+          <div class="a-meta"><span class="a-date">${dateStr}</span>${tagBadges}</div>
         </div>
         <div class="a-arrow">›</div>
       </div>`;
@@ -1539,11 +1657,10 @@ function toggleMonth(el) {
 }
 
 function filterArticles() {
-  const q = document.getElementById('articleSearch').value.trim().toLowerCase();
+  const q = document.getElementById('articleSearch').value.trim();
   document.getElementById('searchClear').style.display = q ? 'block' : 'none';
-  if (!q) { renderArticleList(allArticles); return; }
-  const filtered = allArticles.filter(a => a.displayTitle.toLowerCase().includes(q) || a.name.toLowerCase().includes(q));
-  renderArticleList(filtered, true);
+  const filtered = getFilteredArticles();
+  renderArticleList(filtered, !!(activeDate || activeTag || q));
 }
 
 function clearSearch() {

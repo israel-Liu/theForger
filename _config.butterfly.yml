@@ -40,21 +40,22 @@ social:
 favicon: /img/favicon.png
 
 avatar:
-  img: /images/life/byosoku.jpg
+  img: https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/1774358025964_01hp.jpg
   effect: false
 
 disable_top_img: false
-default_top_img: /images/life/byosoku.jpg
-index_img: /images/life/byosoku.jpg
-archive_img: /images/life/hinata.jpeg
+default_top_img: https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/1774357909243_zmzg.jpg
+index_img: https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/1774357909243_zmzg.jpg
+archive_img: https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/daily/1774338265393_1o2g.JPG
 
 cover:
   index_enable: true
   aside_enable: true
   archives_enable: true
   default_cover:
-    - /images/life/byosoku.jpg
-    - /images/life/hinata.jpeg
+    - https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/1774358025964_01hp.jpg
+    - https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/1774357932875_kf1a.jpg
+    - https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/daily/1774338262086_cbv2.JPG
 
 error_img:
   flink: /img/friend_404.gif

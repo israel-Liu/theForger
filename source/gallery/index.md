@@ -6,7 +6,7 @@ type: "gallery"
 
 <div class="gallery-group-main">
 
-{% galleryGroup '生活日常' '记录每一天的小确幸' '/images/' /images/byosoku.jpg %}
-{% galleryGroup '旅行足迹' '走过的风景' '/images/' /images/hinata.jpeg %}
+{% galleryGroup '生活日常' '志云宝宝的成长瞬间' '/gallery/life' https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/1774358025964_01hp.jpg %}
+{% galleryGroup '日常点滴' '每一天的小确幸' '/gallery/daily' https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/daily/1774338257813_ol9s.JPG %}
 
 </div>

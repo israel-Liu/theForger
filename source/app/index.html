@@ -777,9 +777,14 @@ function renderUploadedList() {
   if (countEl) countEl.textContent = selTotal ? `已选 ${selTotal} 张` : '';
 
   const batches = {};
-  let noBatchSeq = 0;
   uploadedImages.forEach((img, i) => {
-    const key = img.batch || ('legacy_' + (noBatchSeq++));
+    let key;
+    if (img.batch) {
+      key = 'b_' + img.batch;
+    } else {
+      const d = new Date(img.date);
+      key = 'day_' + d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
     if (!batches[key]) batches[key] = { imgs: [], firstDate: img.date };
     batches[key].imgs.push({ ...img, idx: i });
   });
@@ -838,9 +843,14 @@ function toggleCheck(i) {
 }
 
 function selectBatch(batchKey, sel) {
-  let noBatchSeq = 0;
   uploadedImages.forEach(img => {
-    const key = img.batch || ('legacy_' + (noBatchSeq++));
+    let key;
+    if (img.batch) {
+      key = 'b_' + img.batch;
+    } else {
+      const d = new Date(img.date);
+      key = 'day_' + d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
     if (key === batchKey) img.selected = sel;
   });
   localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));

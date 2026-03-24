@@ -1,0 +1,16 @@
+{
+  "name": "博客相册",
+  "short_name": "博客相册",
+  "description": "上传照片到 GitHub 图床，生成 Hexo 博客文章",
+  "start_url": "/app/",
+  "display": "standalone",
+  "background_color": "#f7f8fc",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100' rx='20'/><text y='68' x='50' text-anchor='middle' font-size='50'>📷</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

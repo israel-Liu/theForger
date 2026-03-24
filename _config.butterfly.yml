@@ -1,0 +1,358 @@
+# --------------------------------------
+# Butterfly Theme - 生活记录/照片视频博客 配置
+# --------------------------------------
+
+# Navigation
+nav:
+  logo:
+  display_title: true
+  display_post_title: true
+  fixed: true
+
+menu:
+  主页: / || fas fa-home
+  时间线: /archives/ || fas fa-archive
+  相册: /gallery/ || fas fa-images
+  分类: /categories/ || fas fa-folder-open
+  标签: /tags/ || fas fa-tags
+  关于: /about/ || fas fa-heart
+
+# Code Blocks (保留给旧技术文章)
+code_blocks:
+  theme: light
+  macStyle: false
+  height_limit: false
+  word_wrap: false
+  copy: true
+  language: true
+  shrink: false
+  fullpage: false
+
+# Social
+social:
+  fab fa-github: https://github.com/israel-Liu || Github || '#24292e'
+
+# --------------------------------------
+# Image Settings
+# --------------------------------------
+
+favicon: /img/favicon.png
+
+avatar:
+  img: https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/byosoku.jpg
+  effect: false
+
+disable_top_img: false
+default_top_img: https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/byosoku.jpg
+index_img: https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/byosoku.jpg
+archive_img: https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/hinata.jpeg
+
+cover:
+  index_enable: true
+  aside_enable: true
+  archives_enable: true
+  default_cover:
+    - https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/byosoku.jpg
+    - https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main/life/hinata.jpeg
+
+error_img:
+  flink: /img/friend_404.gif
+  post_page: /img/404.jpg
+
+error_404:
+  enable: true
+  subtitle: '页面走丢了~'
+  background:
+
+post_meta:
+  page:
+    date_type: created
+    date_format: date
+    categories: true
+    tags: false
+    label: true
+  post:
+    position: left
+    date_type: both
+    date_format: date
+    categories: true
+    tags: true
+    label: true
+
+# --------------------------------------
+# Index Page - 瀑布流大图布局
+# --------------------------------------
+
+index_site_info_top:
+index_top_img_height:
+
+subtitle:
+  enable: true
+  effect: true
+  typed_option:
+  source: false
+  sub:
+    - 用照片和视频记录生活的每一刻
+    - 每一张照片都是一段故事
+
+# Layout 6 = Masonry 瀑布流，封面在上，信息在下 —— 最适合照片博客
+index_layout: 6
+
+index_post_content:
+  method: 1
+  length: 150
+
+# --------------------------------------
+# Post Settings
+# --------------------------------------
+
+toc:
+  post: true
+  page: false
+  number: false
+  expand: false
+  style_simple: false
+  scroll_percent: true
+
+post_copyright:
+  enable: true
+  decode: false
+  author_href:
+  license: CC BY-NC-SA 4.0
+  license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+reward:
+  enable: false
+
+post_edit:
+  enable: false
+
+related_post:
+  enable: true
+  limit: 6
+  date_type: created
+
+post_pagination: 1
+
+noticeOutdate:
+  enable: false
+
+# --------------------------------------
+# Footer
+# --------------------------------------
+
+footer:
+  nav:
+  owner:
+    enable: true
+    since: 2019
+  copyright:
+    enable: true
+    version: false
+  custom_text: 用心记录生活的每一天
+
+# --------------------------------------
+# Aside
+# --------------------------------------
+
+aside:
+  enable: true
+  hide: false
+  button: true
+  mobile: true
+  position: right
+  display:
+    archive: true
+    tag: true
+    category: true
+  card_author:
+    enable: true
+    description: 生活不止眼前的代码，还有诗和远方
+    button:
+      enable: true
+      icon: fab fa-github
+      text: Follow Me
+      link: https://github.com/israel-Liu
+  card_announcement:
+    enable: true
+    content: 欢迎来到我的生活记录！这里有照片、视频和日常点滴。
+  card_recent_post:
+    enable: true
+    limit: 5
+    sort: date
+    sort_order:
+  card_newest_comments:
+    enable: false
+  card_categories:
+    enable: true
+    limit: 8
+    expand: none
+    sort_order:
+  card_tags:
+    enable: true
+    limit: 40
+    color: true
+    orderby: random
+    order: 1
+    sort_order:
+  card_archives:
+    enable: true
+    type: monthly
+    format: YYYY年MM月
+    order: -1
+    limit: 12
+    sort_order:
+  card_post_series:
+    enable: false
+  card_webinfo:
+    enable: true
+    post_count: true
+    last_push_date: true
+    sort_order:
+    runtime_date:
+
+# --------------------------------------
+# Bottom Right Button
+# --------------------------------------
+
+rightside_bottom:
+
+translate:
+  enable: false
+
+readmode: true
+
+darkmode:
+  enable: true
+  button: true
+  autoChangeMode: false
+
+rightside_scroll_percent: false
+
+# --------------------------------------
+# Global Settings
+# --------------------------------------
+
+photofigcaption: true
+
+copy:
+  enable: true
+  copyright:
+    enable: false
+
+wordcount:
+  enable: false
+
+busuanzi:
+  site_uv: true
+  site_pv: true
+  page_pv: true
+
+# --------------------------------------
+# Search - 本地搜索
+# --------------------------------------
+
+search:
+  use: local_search
+  placeholder: 搜索文章...
+
+  local_search:
+    preload: false
+    top_n_per_article: 1
+    unescape: false
+    CDN:
+
+# --------------------------------------
+# Share
+# --------------------------------------
+
+share:
+  use: sharejs
+  sharejs:
+    sites: wechat,weibo,qq,facebook,x
+
+# --------------------------------------
+# Comments - 暂不开启，后续可配置
+# --------------------------------------
+
+comments:
+  use:
+  text: true
+  lazyload: false
+  count: false
+  card_post_count: false
+
+# --------------------------------------
+# Beautify / Effect
+# --------------------------------------
+
+rounded_corners_ui: true
+text_align_justify: false
+
+mask:
+  header: true
+  footer: true
+
+preloader:
+  enable: true
+  source: 1
+
+enter_transitions: true
+display_mode: light
+
+beautify:
+  enable: true
+  field: post
+  title_prefix_icon: '\f0c1'
+  title_prefix_icon_color: '#F47466'
+
+font:
+  global_font_size:
+  code_font_size:
+  font_family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Lato, Roboto, "PingFang SC", "Microsoft YaHei", sans-serif
+  code_font_family:
+
+hr_icon:
+  enable: true
+  icon:
+  icon_top:
+
+# --------------------------------------
+# Lightbox - 照片灯箱效果（必开）
+# --------------------------------------
+
+lightbox: fancybox
+
+# --------------------------------------
+# Lazyload - 图片懒加载（必开，照片多时提升性能）
+# --------------------------------------
+
+lazyload:
+  enable: true
+  native: false
+  field: site
+  placeholder:
+  blur: true
+
+# --------------------------------------
+# Other
+# --------------------------------------
+
+pjax:
+  enable: true
+  exclude:
+
+instantpage: true
+
+css_prefix: true
+
+inject:
+  head:
+  bottom:
+
+CDN:
+  internal_provider: local
+  third_party_provider: jsdelivr
+  version: true
+  custom_format:
+  option:

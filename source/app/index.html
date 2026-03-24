@@ -166,6 +166,14 @@ body {
 .article-item .a-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .article-item .a-meta { font-size: 11px; color: var(--text-light); margin-top: 3px; }
 .article-item .a-arrow { color: var(--text-light); font-size: 16px; flex-shrink: 0; }
+.month-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; background: var(--bg);
+  font-size: 13px; font-weight: 600; color: var(--text-light);
+  position: sticky; top: 0; z-index: 1;
+}
+.month-header .m-icon { font-size: 15px; }
+.month-header .m-count { margin-left: auto; font-weight: 400; font-size: 11px; }
 .status-badge {
   display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px;
   border-radius: 20px; font-size: 12px; font-weight: 500;
@@ -379,7 +387,7 @@ body {
     <h3 style="font-size:16px;">📋 文章管理</h3>
     <button class="insert-btn" onclick="loadArticles()" id="btnRefreshArticles">🔄 刷新</button>
   </div>
-  <div class="uploaded-list" id="articleList">
+  <div class="uploaded-list" id="articleList" style="max-height:calc(100vh - 200px);overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="empty-state"><div class="icon">📝</div><p>点击刷新加载文章列表</p></div>
   </div>
 </div>
@@ -958,7 +966,12 @@ async function loadArticles() {
       }));
     }
 
-    items.sort((a, b) => b.name.localeCompare(a.name));
+    items.forEach(a => {
+      const tsMatch = a.name.match(/-(\d{13})\.md$/);
+      a.timestamp = tsMatch ? parseInt(tsMatch[1]) : 0;
+      a.displayTitle = a.name.replace(/\.md$/, '').replace(/-\d{13}$/, '').replace(/-/g, ' ');
+    });
+    items.sort((a, b) => b.timestamp - a.timestamp || b.name.localeCompare(a.name));
     articlesLoaded = true;
 
     if (!items.length) {
@@ -966,17 +979,30 @@ async function loadArticles() {
       return;
     }
 
-    listEl.innerHTML = items.map(a => {
-      const title = a.name.replace(/\.md$/, '').replace(/-\d{13}$/, '').replace(/-/g, ' ');
-      return `<div class="article-item" onclick="openArticle('${encodeURIComponent(a.path)}','${a.sha}')">
-        <div class="a-icon">📄</div>
-        <div class="a-info">
-          <div class="a-title">${title}</div>
-          <div class="a-meta">${a.name}</div>
-        </div>
-        <div class="a-arrow">›</div>
-      </div>`;
-    }).join('');
+    const groups = {};
+    items.forEach(a => {
+      const d = a.timestamp ? new Date(a.timestamp) : null;
+      const key = d ? `${d.getFullYear()}年${String(d.getMonth()+1).padStart(2,'0')}月` : '未知日期';
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(a);
+    });
+
+    let html = '';
+    for (const [month, list] of Object.entries(groups)) {
+      html += `<div class="month-header"><span class="m-icon">📅</span>${month}<span class="m-count">${list.length} 篇</span></div>`;
+      html += list.map(a => {
+        const dateStr = a.timestamp ? new Date(a.timestamp).toLocaleDateString('zh-CN', {month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}) : '';
+        return `<div class="article-item" onclick="openArticle('${encodeURIComponent(a.path)}','${a.sha}')">
+          <div class="a-icon">📄</div>
+          <div class="a-info">
+            <div class="a-title">${a.displayTitle}</div>
+            <div class="a-meta">${dateStr ? dateStr + ' · ' : ''}${a.name}</div>
+          </div>
+          <div class="a-arrow">›</div>
+        </div>`;
+      }).join('');
+    }
+    listEl.innerHTML = html;
   } catch (err) {
     listEl.innerHTML = `<div class="empty-state"><div class="icon">❌</div><p>加载失败</p><p style="font-size:12px;margin-top:4px;">${err.message}</p></div>`;
   }

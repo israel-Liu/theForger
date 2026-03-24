@@ -173,6 +173,36 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 .btn-group { display: flex; gap: 8px; margin-top: 12px; }
 .btn-group .btn { flex: 1; }
+.insert-btn {
+  padding: 8px 14px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--card); font-size: 13px; cursor: pointer; transition: all 0.2s;
+  white-space: nowrap;
+}
+.insert-btn:active { background: var(--bg); transform: scale(0.96); }
+.dialog-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: var(--safe-bottom);
+}
+.dialog-box {
+  background: var(--card); border-radius: 20px 20px 0 0;
+  padding: 24px; width: 100%; max-width: 500px; max-height: 80vh; overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.platform-tabs { display: flex; gap: 8px; }
+.platform-tab {
+  flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--card); font-size: 13px; cursor: pointer; text-align: center;
+  transition: all 0.2s;
+}
+.platform-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+.video-hint { font-size: 12px; color: var(--text-light); margin-bottom: 12px; }
+.video-preview {
+  background: #000; border-radius: 10px; overflow: hidden; aspect-ratio: 16/9;
+}
+.video-preview iframe { width: 100%; height: 100%; border: none; }
 </style>
 </head>
 <body>
@@ -189,27 +219,37 @@ body {
 
 <div id="pageSetup" class="page">
   <div class="setup-card">
-    <h3>🔧 GitHub 配置</h3>
-    <p style="font-size:13px;color:var(--text-light);margin-bottom:16px;">
-      首次使用需要配置 GitHub Token，配置保存在手机本地。
-    </p>
-    <div class="input-group">
-      <label>GitHub Token</label>
-      <input type="password" id="inputToken" placeholder="ghp_xxxxxxxxxxxx">
+    <h3>📡 当前工作平台</h3>
+    <div class="platform-tabs" style="margin-bottom:8px;">
+      <button class="platform-tab" id="activeBtnGithub" onclick="setActivePlatform('github')">🐙 GitHub</button>
+      <button class="platform-tab" id="activeBtnCodeup" onclick="setActivePlatform('codeup')">☁️ Codeup</button>
     </div>
-    <div class="input-group">
-      <label>图床仓库</label>
-      <input type="text" id="inputRepo" value="israel-Liu/blog-images">
+    <p style="font-size:12px;color:var(--text-light);">上传和发布将使用选中平台的配置</p>
+  </div>
+
+  <div class="setup-card">
+    <div class="platform-tabs" style="margin-bottom:16px;">
+      <button class="platform-tab active" id="cfgTabGithub" onclick="showConfigTab('github')">🐙 GitHub 配置</button>
+      <button class="platform-tab" id="cfgTabCodeup" onclick="showConfigTab('codeup')">☁️ Codeup 配置</button>
     </div>
-    <div class="input-group">
-      <label>博客源码仓库</label>
-      <input type="text" id="inputBlogRepo" value="israel-Liu/theForger">
+
+    <div id="configGithub">
+      <p style="font-size:13px;color:var(--text-light);margin-bottom:16px;">通过 GitHub API 上传图片和发布文章。</p>
+      <div class="input-group"><label>GitHub Token</label><input type="password" id="inputGhToken" placeholder="ghp_xxxxxxxxxxxx"></div>
+      <div class="input-group"><label>图床仓库</label><input type="text" id="inputGhRepo" value="israel-Liu/blog-images"></div>
+      <div class="input-group"><label>博客源码仓库</label><input type="text" id="inputGhBlogRepo" value="israel-Liu/theForger"></div>
+      <div class="input-group"><label>CDN 域名前缀</label><input type="text" id="inputGhCdn" value="https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main"></div>
+      <button class="btn btn-primary" onclick="savePlatformConfig('github')">💾 保存 GitHub 配置</button>
     </div>
-    <div class="input-group">
-      <label>CDN 域名前缀</label>
-      <input type="text" id="inputCdn" value="https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main">
+
+    <div id="configCodeup" style="display:none;">
+      <p style="font-size:13px;color:var(--text-light);margin-bottom:16px;">通过 Codeup API 上传图片和发布文章。</p>
+      <div class="input-group"><label>Codeup Token</label><input type="password" id="inputCuToken" placeholder="pt-xxxxxxxxxxxx"></div>
+      <div class="input-group"><label>图床仓库路径</label><input type="text" id="inputCuRepo" placeholder="组织ID/项目组/仓库名"></div>
+      <div class="input-group"><label>博客仓库路径</label><input type="text" id="inputCuBlogRepo" value="69c25a5b43d4694d6a528ca9/blog/zybb"></div>
+      <div class="input-group"><label>图片URL前缀</label><input type="text" id="inputCuCdn" placeholder="OSS地址 或 Codeup原始文件URL前缀"></div>
+      <button class="btn btn-primary" onclick="savePlatformConfig('codeup')">💾 保存 Codeup 配置</button>
     </div>
-    <button class="btn btn-primary" onclick="saveConfig()">💾 保存配置</button>
   </div>
 </div>
 
@@ -266,7 +306,36 @@ body {
     </div>
     <div class="input-group">
       <label>正文（可选，支持 Markdown）</label>
-      <textarea id="blogBody" rows="4" placeholder="写点什么..."></textarea>
+      <textarea id="blogBody" rows="6" placeholder="写点什么..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="insert-btn" onclick="showVideoDialog()">🎬 插入视频</button>
+        <button class="insert-btn" onclick="insertDivider()">➖ 分隔线</button>
+        <button class="insert-btn" onclick="insertQuote()">💬 引用</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="videoDialog" class="dialog-overlay" style="display:none;">
+    <div class="dialog-box">
+      <h3 style="margin-bottom:12px;">🎬 插入视频</h3>
+      <div class="platform-tabs">
+        <button class="platform-tab active" data-platform="bilibili" onclick="selectPlatform(this)">📺 B站</button>
+        <button class="platform-tab" data-platform="youtube" onclick="selectPlatform(this)">▶️ YouTube</button>
+        <button class="platform-tab" data-platform="custom" onclick="selectPlatform(this)">🔗 其他</button>
+      </div>
+      <div class="input-group" style="margin-top:12px;">
+        <label id="videoUrlLabel">粘贴 B站 视频链接或 BV号</label>
+        <input type="text" id="videoUrlInput" placeholder="例如：BV1xx411c7mD 或完整链接">
+      </div>
+      <p id="videoHint" class="video-hint">支持格式：BV号、b23.tv短链、bilibili.com 完整链接</p>
+      <div id="videoPreviewBox" style="display:none;margin-bottom:12px;">
+        <label style="font-size:13px;color:var(--text-light);margin-bottom:6px;display:block;">预览</label>
+        <div id="videoPreview" class="video-preview"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary" onclick="closeVideoDialog()" style="flex:1;">取消</button>
+        <button class="btn btn-primary" onclick="insertVideo()" style="flex:1;">插入</button>
+      </div>
     </div>
   </div>
 
@@ -300,6 +369,7 @@ body {
 
 <script>
 const GITHUB_API = 'https://api.github.com';
+const CODEUP_API = 'https://codeup.aliyun.com/oapi/v1/codeup/organizations/repositories';
 let config = {};
 let selectedFiles = [];
 let uploadedImages = [];
@@ -307,17 +377,33 @@ let currentCategory = 'life';
 
 function init() {
   config = JSON.parse(localStorage.getItem('blogUploader') || '{}');
-  uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-  if (config.token) {
-    document.getElementById('inputToken').value = config.token;
-    document.getElementById('inputRepo').value = config.repo || '';
-    document.getElementById('inputBlogRepo').value = config.blogRepo || 'israel-Liu/theForger';
-    document.getElementById('inputCdn').value = config.cdn || '';
-    updateStatus(true);
-    switchTab('upload');
-  } else {
-    switchTab('setup');
+  if (!config.activePlatform) {
+    if (config.token) {
+      config = { activePlatform: 'github', github: { token: config.token, repo: config.repo, blogRepo: config.blogRepo, cdn: config.cdn }, codeup: {} };
+    } else {
+      config = { activePlatform: 'github', github: {}, codeup: {} };
+    }
+    localStorage.setItem('blogUploader', JSON.stringify(config));
   }
+  uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
+
+  const gh = config.github || {};
+  document.getElementById('inputGhToken').value = gh.token || '';
+  document.getElementById('inputGhRepo').value = gh.repo || 'israel-Liu/blog-images';
+  document.getElementById('inputGhBlogRepo').value = gh.blogRepo || 'israel-Liu/theForger';
+  document.getElementById('inputGhCdn').value = gh.cdn || 'https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main';
+
+  const cu = config.codeup || {};
+  document.getElementById('inputCuToken').value = cu.token || '';
+  document.getElementById('inputCuRepo').value = cu.imageRepo || '';
+  document.getElementById('inputCuBlogRepo').value = cu.blogRepo || '69c25a5b43d4694d6a528ca9/blog/zybb';
+  document.getElementById('inputCuCdn').value = cu.cdn || '';
+
+  setActivePlatform(config.activePlatform, true);
+  const pc = getPC();
+  if (pc.token) { updateStatus(true); switchTab('upload'); }
+  else { switchTab('setup'); }
+
   document.getElementById('fileInput').addEventListener('change', handleFileSelect);
   document.querySelectorAll('.category-chip').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -329,23 +415,46 @@ function init() {
   renderUploadedList();
 }
 
-function saveConfig() {
-  const token = document.getElementById('inputToken').value.trim();
-  const repo = document.getElementById('inputRepo').value.trim();
-  const blogRepo = document.getElementById('inputBlogRepo').value.trim();
-  const cdn = document.getElementById('inputCdn').value.trim();
-  if (!token) { showToast('请输入 GitHub Token'); return; }
-  config = { token, repo, blogRepo, cdn };
+function getPC() {
+  if (config.activePlatform === 'codeup') return config.codeup || {};
+  return config.github || {};
+}
+
+function setActivePlatform(p, skipSave) {
+  config.activePlatform = p;
+  document.getElementById('activeBtnGithub').classList.toggle('active', p === 'github');
+  document.getElementById('activeBtnCodeup').classList.toggle('active', p === 'codeup');
+  updateStatus(!!getPC().token);
+  if (!skipSave) { localStorage.setItem('blogUploader', JSON.stringify(config)); showToast('已切换到 ' + (p === 'github' ? 'GitHub' : 'Codeup')); }
+}
+
+function showConfigTab(tab) {
+  document.getElementById('cfgTabGithub').classList.toggle('active', tab === 'github');
+  document.getElementById('cfgTabCodeup').classList.toggle('active', tab === 'codeup');
+  document.getElementById('configGithub').style.display = tab === 'github' ? 'block' : 'none';
+  document.getElementById('configCodeup').style.display = tab === 'codeup' ? 'block' : 'none';
+}
+
+function savePlatformConfig(platform) {
+  if (platform === 'github') {
+    const token = document.getElementById('inputGhToken').value.trim();
+    if (!token) { showToast('请输入 GitHub Token'); return; }
+    config.github = { token, repo: document.getElementById('inputGhRepo').value.trim(), blogRepo: document.getElementById('inputGhBlogRepo').value.trim(), cdn: document.getElementById('inputGhCdn').value.trim() };
+  } else {
+    const token = document.getElementById('inputCuToken').value.trim();
+    if (!token) { showToast('请输入 Codeup Token'); return; }
+    config.codeup = { token, imageRepo: document.getElementById('inputCuRepo').value.trim(), blogRepo: document.getElementById('inputCuBlogRepo').value.trim(), cdn: document.getElementById('inputCuCdn').value.trim() };
+  }
   localStorage.setItem('blogUploader', JSON.stringify(config));
-  updateStatus(true);
-  showToast('✅ 配置已保存');
-  switchTab('upload');
+  updateStatus(!!getPC().token);
+  showToast('✅ ' + (platform === 'github' ? 'GitHub' : 'Codeup') + ' 配置已保存');
+  if (getPC().token) switchTab('upload');
 }
 
 function updateStatus(ok) {
   const b = document.getElementById('statusBadge');
   b.className = 'status-badge ' + (ok ? 'connected' : 'disconnected');
-  b.textContent = ok ? '✓ 已连接' : '未配置';
+  b.textContent = ok ? ('✓ ' + (config.activePlatform === 'codeup' ? 'Codeup' : 'GitHub')) : '未配置';
 }
 
 function switchTab(name) {
@@ -392,7 +501,7 @@ function clearAll() {
 }
 
 async function uploadAll() {
-  if (!config.token) { showToast('请先配置'); switchTab('setup'); return; }
+  if (!getPC().token) { showToast('请先配置'); switchTab('setup'); return; }
   if (!selectedFiles.length) { showToast('请先选择照片'); return; }
   const btn = document.getElementById('btnUpload');
   btn.disabled = true; btn.textContent = '⏳ 上传中...';
@@ -403,15 +512,15 @@ async function uploadAll() {
   for (const f of selectedFiles) {
     f.status = 'uploading'; renderPreview();
     try {
-      const result = await uploadToGithub(f.file, f.name);
+      const result = await uploadImage(f.file, f.name);
       f.status = 'done'; success++;
       uploadedImages.unshift({
         name: result.safeName,
-        cdnUrl: `${config.cdn}/${currentCategory}/${result.safeName}`,
+        cdnUrl: `${getPC().cdn}/${currentCategory}/${result.safeName}`,
         category: currentCategory,
         date: new Date().toISOString()
       });
-    } catch (err) { f.status = 'error'; console.error(err); }
+    } catch (err) { f.status = 'error'; console.error(err); showToast('❌ ' + (err.message || err)); }
     done++;
     fill.style.width = (done/total*100)+'%';
     renderPreview();
@@ -426,17 +535,44 @@ async function uploadAll() {
   if (selectedFiles.length) renderPreview();
 }
 
+async function uploadImage(file, filename) {
+  if (config.activePlatform === 'codeup') return uploadToCodeup(file, filename);
+  return uploadToGithub(file, filename);
+}
+
 async function uploadToGithub(file, filename) {
+  const gh = config.github;
   const ext = filename.split('.').pop();
   const safeName = `${Date.now()}_${Math.random().toString(36).slice(2,6)}.${ext}`;
   const path = `${currentCategory}/${safeName}`;
   const base64 = await fileToBase64(file);
-  const res = await fetch(`${GITHUB_API}/repos/${config.repo}/contents/${path}`, {
+  const res = await fetch(`${GITHUB_API}/repos/${gh.repo}/contents/${path}`, {
     method: 'PUT',
-    headers: { 'Authorization': `token ${config.token}`, 'Content-Type': 'application/json' },
+    headers: {
+      'Authorization': `Bearer ${gh.token}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    },
     body: JSON.stringify({ message: `upload: ${safeName}`, content: base64, branch: 'main' })
   });
-  if (!res.ok) throw new Error((await res.json()).message);
+  if (!res.ok) { const e = await res.json(); throw new Error(e.message || res.status); }
+  return { safeName };
+}
+
+async function uploadToCodeup(file, filename) {
+  const cu = config.codeup;
+  const ext = filename.split('.').pop();
+  const safeName = `${Date.now()}_${Math.random().toString(36).slice(2,6)}.${ext}`;
+  const filePath = `${currentCategory}/${safeName}`;
+  const base64 = await fileToBase64(file);
+  const repoId = encodeURIComponent(cu.imageRepo);
+  const res = await fetch(`${CODEUP_API}/${repoId}/files`, {
+    method: 'POST',
+    headers: { 'x-yunxiao-token': cu.token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ branch: 'main', commitMessage: `upload: ${safeName}`, content: base64, encoding: 'base64', filePath: encodeURIComponent(filePath) })
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.errorMessage || e.message || res.status); }
   return { safeName };
 }
 
@@ -514,7 +650,8 @@ async function publishPost() {
   btn.disabled = true; btn.textContent = '🚀 发布中...';
 
   statusEl.style.display = 'block';
-  statusEl.innerHTML = '<div class="publish-status"><div class="spinner"></div><p>正在发布文章到博客...</p><p style="font-size:12px;color:var(--text-light);margin-top:4px;">通过 GitHub API 创建文章，自动触发构建部署</p></div>';
+  const pName = config.activePlatform === 'codeup' ? 'Codeup' : 'GitHub';
+  statusEl.innerHTML = `<div class="publish-status"><div class="spinner"></div><p>正在发布文章到博客...</p><p style="font-size:12px;color:var(--text-light);margin-top:4px;">通过 ${pName} API 创建文章，自动触发构建部署</p></div>`;
 
   try {
     const timestamp = Date.now();
@@ -522,28 +659,34 @@ async function publishPost() {
     const filename = `${safeTitle}-${timestamp}`;
     const path = `source/_posts/${filename}.md`;
     const content = utf8ToBase64(result.md);
+    const isCodeup = config.activePlatform === 'codeup';
+    const pc = getPC();
 
-    const res = await fetch(`${GITHUB_API}/repos/${config.blogRepo}/contents/${path}`, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${config.token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: `post: ${result.title}`,
-        content: content,
-        branch: 'master'
-      })
-    });
-
-    if (!res.ok) {
-      const errData = await res.json();
-      throw new Error(errData.message || `HTTP ${res.status}`);
+    if (isCodeup) {
+      const repoId = encodeURIComponent(pc.blogRepo);
+      const res = await fetch(`${CODEUP_API}/${repoId}/files`, {
+        method: 'POST',
+        headers: { 'x-yunxiao-token': pc.token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ branch: 'master', commitMessage: `post: ${result.title}`, content: content, encoding: 'base64', filePath: encodeURIComponent(path) })
+      });
+      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.errorMessage || e.message || `HTTP ${res.status}`); }
+    } else {
+      const blogRepo = pc.blogRepo || 'israel-Liu/theForger';
+      const res = await fetch(`${GITHUB_API}/repos/${blogRepo}/contents/${path}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${pc.token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28' },
+        body: JSON.stringify({ message: `post: ${result.title}`, content: content, branch: 'master' })
+      });
+      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || `HTTP ${res.status}`); }
     }
 
+    const platformName = isCodeup ? 'Codeup' : 'GitHub';
     statusEl.innerHTML = `
       <div class="publish-status">
         <div style="font-size:48px;margin-bottom:12px;">🎉</div>
         <h3>发布成功！</h3>
         <p style="color:var(--text-light);font-size:13px;margin-top:8px;">
-          文章已提交到 GitHub，自动构建部署中...<br>
+          文章已提交到 ${platformName}，自动构建部署中...<br>
           约 1-2 分钟后可在网站上看到
         </p>
         <div style="height:16px;"></div>
@@ -558,15 +701,21 @@ async function publishPost() {
     localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
 
   } catch (err) {
+    let detail = err.message || String(err);
+    const pc = getPC();
+    if (detail === 'Failed to fetch') {
+      detail = '网络请求失败。请检查：\n1. 手机网络是否正常\n2. Token 是否正确\n3. 仓库名是否填对（设置页面）';
+    }
     statusEl.innerHTML = `
       <div class="publish-status">
         <div style="font-size:48px;margin-bottom:12px;">❌</div>
         <h3>发布失败</h3>
-        <p style="color:var(--danger);font-size:13px;margin-top:8px;">${err.message}</p>
+        <p style="color:var(--danger);font-size:13px;margin-top:8px;white-space:pre-line;">${detail}</p>
+        <p style="font-size:11px;color:var(--text-light);margin-top:8px;">平台: ${config.activePlatform}<br>博客仓库: ${pc.blogRepo || '未设置'}<br>分支: master</p>
         <div style="height:16px;"></div>
         <button class="btn btn-warning" onclick="publishPost()">🔄 重试</button>
       </div>`;
-    showToast('❌ 发布失败: ' + err.message);
+    showToast('❌ 发布失败');
   }
 
   btn.disabled = false; btn.textContent = '🚀 发布到博客';
@@ -577,6 +726,134 @@ async function copyMarkdown() {
   try { await navigator.clipboard.writeText(text); }
   catch { const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t); }
   showToast('✅ 已复制');
+}
+
+let videoPlatform = 'bilibili';
+
+function showVideoDialog() {
+  document.getElementById('videoDialog').style.display = 'flex';
+  document.getElementById('videoUrlInput').value = '';
+  document.getElementById('videoPreviewBox').style.display = 'none';
+  selectPlatform(document.querySelector('.platform-tab[data-platform="bilibili"]'));
+}
+
+function closeVideoDialog() {
+  document.getElementById('videoDialog').style.display = 'none';
+}
+
+function selectPlatform(el) {
+  document.querySelectorAll('.platform-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  videoPlatform = el.dataset.platform;
+  const label = document.getElementById('videoUrlLabel');
+  const hint = document.getElementById('videoHint');
+  const input = document.getElementById('videoUrlInput');
+  if (videoPlatform === 'bilibili') {
+    label.textContent = '粘贴 B站 视频链接或 BV号';
+    input.placeholder = '例如：BV1xx411c7mD 或完整链接';
+    hint.textContent = '支持格式：BV号、b23.tv短链、bilibili.com 完整链接';
+  } else if (videoPlatform === 'youtube') {
+    label.textContent = '粘贴 YouTube 视频链接或 ID';
+    input.placeholder = '例如：dQw4w9WgXcQ 或完整链接';
+    hint.textContent = '支持格式：youtu.be 短链、youtube.com 完整链接、视频 ID';
+  } else {
+    label.textContent = '粘贴视频直链（mp4 等）';
+    input.placeholder = '例如：https://example.com/video.mp4';
+    hint.textContent = '直接填写视频文件 URL，将使用 HTML5 播放器';
+  }
+  document.getElementById('videoPreviewBox').style.display = 'none';
+}
+
+function parseBilibili(input) {
+  let bvid = '';
+  const bvMatch = input.match(/BV[a-zA-Z0-9]+/i);
+  if (bvMatch) { bvid = bvMatch[0]; }
+  return bvid;
+}
+
+function parseYoutube(input) {
+  let vid = '';
+  const patterns = [
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/
+  ];
+  for (const p of patterns) {
+    const m = input.match(p);
+    if (m) { vid = m[1]; break; }
+  }
+  return vid;
+}
+
+function generateEmbed(platform, input) {
+  if (platform === 'bilibili') {
+    const bvid = parseBilibili(input);
+    if (!bvid) return null;
+    return {
+      iframe: `<iframe src="//player.bilibili.com/player.html?bvid=${bvid}&page=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="100%" height="500"></iframe>`,
+      previewSrc: `//player.bilibili.com/player.html?bvid=${bvid}&page=1&autoplay=0`
+    };
+  } else if (platform === 'youtube') {
+    const vid = parseYoutube(input);
+    if (!vid) return null;
+    return {
+      iframe: `<iframe width="100%" height="500" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe>`,
+      previewSrc: `https://www.youtube.com/embed/${vid}`
+    };
+  } else {
+    const url = input.trim();
+    if (!url) return null;
+    return {
+      iframe: `<video src="${url}" controls width="100%" style="border-radius:8px;"></video>`,
+      previewSrc: null
+    };
+  }
+}
+
+function insertVideo() {
+  const input = document.getElementById('videoUrlInput').value.trim();
+  if (!input) { showToast('请输入视频链接'); return; }
+
+  const embed = generateEmbed(videoPlatform, input);
+  if (!embed) {
+    if (videoPlatform === 'bilibili') showToast('未识别到 BV号，请检查链接');
+    else if (videoPlatform === 'youtube') showToast('未识别到 YouTube 视频 ID');
+    else showToast('请输入有效链接');
+    return;
+  }
+
+  const textarea = document.getElementById('blogBody');
+  const pos = textarea.selectionStart || textarea.value.length;
+  const before = textarea.value.substring(0, pos);
+  const after = textarea.value.substring(pos);
+  const insert = (before && !before.endsWith('\n') ? '\n\n' : '') + embed.iframe + '\n\n';
+  textarea.value = before + insert + after;
+  textarea.focus();
+
+  closeVideoDialog();
+  showToast('✅ 视频已插入');
+}
+
+function insertDivider() {
+  const textarea = document.getElementById('blogBody');
+  const pos = textarea.selectionStart || textarea.value.length;
+  const before = textarea.value.substring(0, pos);
+  const after = textarea.value.substring(pos);
+  const insert = (before && !before.endsWith('\n') ? '\n\n' : '') + '---\n\n';
+  textarea.value = before + insert + after;
+  textarea.focus();
+}
+
+function insertQuote() {
+  const textarea = document.getElementById('blogBody');
+  const pos = textarea.selectionStart || textarea.value.length;
+  const before = textarea.value.substring(0, pos);
+  const after = textarea.value.substring(pos);
+  const insert = (before && !before.endsWith('\n') ? '\n\n' : '') + '> ';
+  textarea.value = before + insert + after;
+  textarea.focus();
+  textarea.selectionStart = textarea.selectionEnd = textarea.value.length - after.length;
 }
 
 function showToast(msg) {

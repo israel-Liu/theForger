@@ -705,7 +705,7 @@ function switchTab(name) {
   document.getElementById(map[name]).classList.add('active');
   document.querySelectorAll('.tab-item')[ {upload:0,blog:1,articles:2,setup:3}[name] ].classList.add('active');
   if (name === 'blog') renderUploadedList();
-  if (name === 'articles' && !articlesLoaded) loadArticles();
+  if (name === 'articles') restoreOrLoadArticles();
   localStorage.setItem('activeTab', name);
 }
 
@@ -1483,58 +1483,114 @@ function parseFrontmatter(raw) {
   return { meta, body: body.trim() };
 }
 
+function processArticleItems(items) {
+  items.forEach(a => {
+    const tsMatch = a.name.match(/-(\d{13})\.md$/);
+    a.timestamp = tsMatch ? parseInt(tsMatch[1]) : 0;
+    a.displayTitle = a.name.replace(/\.md$/, '').replace(/-\d{13}$/, '').replace(/-/g, ' ');
+  });
+  items.sort((a, b) => b.timestamp - a.timestamp || b.name.localeCompare(a.name));
+  return items;
+}
+
+function applyArticleData(items, resetFilters) {
+  allArticles = items;
+  articlesLoaded = true;
+  localStorage.setItem('cachedArticles', JSON.stringify(items));
+  if (resetFilters) {
+    document.getElementById('articleSearch').value = '';
+    document.getElementById('searchClear').style.display = 'none';
+    activeDate = null; activeTag = null;
+  }
+  buildFilters(items);
+  renderArticleList(getFilteredArticles());
+}
+
+function restoreOrLoadArticles() {
+  if (articlesLoaded) return;
+  const cached = localStorage.getItem('cachedArticles');
+  if (cached) {
+    try {
+      const items = JSON.parse(cached);
+      applyArticleData(items, true);
+      refreshArticlesInBackground();
+      return;
+    } catch(e) {}
+  }
+  loadArticles();
+}
+
+function refreshArticlesInBackground() {
+  const btn = document.getElementById('btnRefreshArticles');
+  btn.textContent = '⏳ 同步中';
+  btn.disabled = true;
+  fetchArticleList().then(items => {
+    if (items) applyArticleData(items, false);
+    btn.textContent = '🔄 刷新';
+    btn.disabled = false;
+  }).catch(() => {
+    btn.textContent = '🔄 刷新';
+    btn.disabled = false;
+  });
+}
+
+async function fetchArticleList() {
+  const pc = getPC();
+  if (!pc.token) return null;
+  let items = [];
+  if (config.activePlatform === 'codeup') {
+    const repoId = encodeURIComponent(pc.blogRepo);
+    const res = await codeupFetch(`${repoId}/files?filePath=${encodeURIComponent('source/_posts')}&ref=master`, {
+      headers: { 'x-yunxiao-token': pc.token }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const tree = data.result || data;
+    items = (Array.isArray(tree) ? tree : []).filter(f => f.name && f.name.endsWith('.md')).map(f => ({
+      name: f.name,
+      path: f.path || `source/_posts/${f.name}`,
+      sha: f.id || ''
+    }));
+  } else {
+    const blogRepo = pc.blogRepo || 'israel-Liu/theForger';
+    const res = await fetch(`${GITHUB_API}/repos/${blogRepo}/contents/source/_posts`, {
+      headers: { 'Authorization': `Bearer ${pc.token}`, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    items = data.filter(f => f.name.endsWith('.md')).map(f => ({
+      name: f.name,
+      path: f.path,
+      sha: f.sha
+    }));
+  }
+  return processArticleItems(items);
+}
+
 async function loadArticles() {
   const pc = getPC();
   if (!pc.token) { showToast('请先配置 Token'); return; }
   const listEl = document.getElementById('articleList');
-  listEl.innerHTML = '<div class="empty-state"><div class="spinner"></div><p style="margin-top:12px;">加载中...</p></div>';
-  document.getElementById('articleCount').textContent = '';
+  const hasCached = allArticles.length > 0;
+  if (!hasCached) {
+    listEl.innerHTML = '<div class="empty-state"><div class="spinner"></div><p style="margin-top:12px;">首次加载中...</p></div>';
+    document.getElementById('articleCount').textContent = '';
+  }
+  const btn = document.getElementById('btnRefreshArticles');
+  btn.textContent = '⏳ 同步中'; btn.disabled = true;
 
   try {
-    let items = [];
-    if (config.activePlatform === 'codeup') {
-      const repoId = encodeURIComponent(pc.blogRepo);
-      const res = await codeupFetch(`${repoId}/files?filePath=${encodeURIComponent('source/_posts')}&ref=master`, {
-        headers: { 'x-yunxiao-token': pc.token }
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const tree = data.result || data;
-      items = (Array.isArray(tree) ? tree : []).filter(f => f.name && f.name.endsWith('.md')).map(f => ({
-        name: f.name,
-        path: f.path || `source/_posts/${f.name}`,
-        sha: f.id || ''
-      }));
-    } else {
-      const blogRepo = pc.blogRepo || 'israel-Liu/theForger';
-      const res = await fetch(`${GITHUB_API}/repos/${blogRepo}/contents/source/_posts`, {
-        headers: { 'Authorization': `Bearer ${pc.token}`, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      items = data.filter(f => f.name.endsWith('.md')).map(f => ({
-        name: f.name,
-        path: f.path,
-        sha: f.sha
-      }));
-    }
-
-    items.forEach(a => {
-      const tsMatch = a.name.match(/-(\d{13})\.md$/);
-      a.timestamp = tsMatch ? parseInt(tsMatch[1]) : 0;
-      a.displayTitle = a.name.replace(/\.md$/, '').replace(/-\d{13}$/, '').replace(/-/g, ' ');
-    });
-    items.sort((a, b) => b.timestamp - a.timestamp || b.name.localeCompare(a.name));
-    allArticles = items;
-    articlesLoaded = true;
-    document.getElementById('articleSearch').value = '';
-    document.getElementById('searchClear').style.display = 'none';
-    activeDate = null; activeTag = null;
-    buildFilters(items);
-    renderArticleList(items);
+    const items = await fetchArticleList();
+    if (items) applyArticleData(items, !hasCached);
+    showToast('✅ 文章列表已更新');
   } catch (err) {
-    listEl.innerHTML = `<div class="empty-state"><div class="icon">❌</div><p>加载失败</p><p style="font-size:12px;margin-top:4px;">${err.message}</p></div>`;
+    if (!hasCached) {
+      listEl.innerHTML = `<div class="empty-state"><div class="icon">❌</div><p>加载失败</p><p style="font-size:12px;margin-top:4px;">${err.message}</p></div>`;
+    } else {
+      showToast('刷新失败: ' + err.message);
+    }
   }
+  btn.textContent = '🔄 刷新'; btn.disabled = false;
 }
 
 let activeDate = null;

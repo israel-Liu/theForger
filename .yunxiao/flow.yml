@@ -1,47 +1,24 @@
-name: Build and Deploy Hexo Blog (Codeup)
+# 云效 Flow 流水线 - 构建 Hexo 并部署到 GitHub Pages
+# 在云效中关联此仓库后，需要配置以下环境变量：
+#   GITHUB_TOKEN: GitHub Personal Access Token (用于推送到 GitHub Pages 仓库)
+#
+# 配置步骤：
+# 1. 打开 https://flow.aliyun.com
+# 2. 新建流水线 → 关联 Codeup 仓库 blog/zybb
+# 3. 选择 Node.js 构建模板
+# 4. 在流水线变量中添加 GITHUB_TOKEN
+# 5. 按下面的步骤配置构建和部署命令
 
-triggers:
-  push:
-    branches:
-      include:
-        - master
-    paths:
-      include:
-        - source/**
-        - _config.yml
-        - _config.butterfly.yml
-        - package.json
-
-stages:
-  - name: build
-    displayName: 构建 Hexo 博客
-    steps:
-      - uses: checkout
-      - uses: node
-        with:
-          nodeVersion: "20"
-      - run: npm ci
-        displayName: 安装依赖
-      - run: npx hexo clean && npx hexo generate
-        displayName: 生成静态文件
-      - uses: upload-artifact
-        with:
-          name: public
-          path: public/
-
-  - name: deploy
-    displayName: 部署到 OSS
-    dependsOn: build
-    steps:
-      - uses: download-artifact
-        with:
-          name: public
-          path: public/
-      - uses: aliyun-oss-deploy
-        with:
-          accessKeyId: ${ALIYUN_AK_ID}
-          accessKeySecret: ${ALIYUN_AK_SECRET}
-          bucket: ${OSS_BUCKET}
-          region: cn-shanghai
-          sourceDir: public/
-          targetDir: /
+# 触发条件: push 到 master 分支且修改了文章/配置
+# 构建命令:
+#   npm ci
+#   npx hexo clean && npx hexo generate
+#
+# 部署命令 (在构建步骤之后):
+#   cd public
+#   git init
+#   git config user.name "Codeup Deploy"
+#   git config user.email "deploy@codeup"
+#   git add -A
+#   git commit -m "deploy from Codeup Flow"
+#   git push -f https://${GITHUB_TOKEN}@github.com/israel-Liu/israel-Liu.github.io.git master

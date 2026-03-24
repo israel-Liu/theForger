@@ -247,7 +247,8 @@ body {
       <div class="input-group"><label>Codeup Token</label><input type="password" id="inputCuToken" placeholder="pt-xxxxxxxxxxxx"></div>
       <div class="input-group"><label>图床仓库路径</label><input type="text" id="inputCuRepo" placeholder="组织ID/项目组/仓库名"></div>
       <div class="input-group"><label>博客仓库路径</label><input type="text" id="inputCuBlogRepo" value="69c25a5b43d4694d6a528ca9/blog/zybb"></div>
-      <div class="input-group"><label>图片URL前缀</label><input type="text" id="inputCuCdn" placeholder="OSS地址 或 Codeup原始文件URL前缀"></div>
+      <div class="input-group"><label>图片URL前缀</label><input type="text" id="inputCuCdn" value="https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main"></div>
+      <p style="font-size:11px;color:var(--text-light);margin-top:-10px;margin-bottom:12px;">默认使用 jsdelivr CDN（图片仓库双平台同步）。如有 OSS 可替换为 OSS 地址。</p>
       <button class="btn btn-primary" onclick="savePlatformConfig('codeup')">💾 保存 Codeup 配置</button>
     </div>
   </div>
@@ -397,7 +398,7 @@ function init() {
   document.getElementById('inputCuToken').value = cu.token || '';
   document.getElementById('inputCuRepo').value = cu.imageRepo || '';
   document.getElementById('inputCuBlogRepo').value = cu.blogRepo || '69c25a5b43d4694d6a528ca9/blog/zybb';
-  document.getElementById('inputCuCdn').value = cu.cdn || '';
+  document.getElementById('inputCuCdn').value = cu.cdn || 'https://cdn.jsdelivr.net/gh/israel-Liu/blog-images@main';
 
   setActivePlatform(config.activePlatform, true);
   const pc = getPC();
